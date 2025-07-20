@@ -1,0 +1,7 @@
+/.git/
+/proj.cache/
+/proj.hw/
+/proj.runs/
+proj.xpr
+vivado.jou
+vivado.log

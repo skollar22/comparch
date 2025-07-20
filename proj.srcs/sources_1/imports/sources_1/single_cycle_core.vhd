@@ -145,7 +145,7 @@ component data_memory is
            data_out     : out std_logic_vector(15 downto 0) );
 end component;
 
--- pipeline stuff
+-- pipeline stuf
 component hazard_unit is
   Port (
   -- in
