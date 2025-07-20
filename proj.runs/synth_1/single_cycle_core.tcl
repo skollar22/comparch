@@ -56,6 +56,7 @@ if {$::dispatch::connected} {
 }
 
 OPTRACE "synth_1" START { ROLLUP_AUTO }
+set_param chipscope.maxJobs 4
 OPTRACE "Creating in-memory project" START { }
 create_project -in_memory -part xc7a35tcpg236-1
 
@@ -85,7 +86,7 @@ read_vhdl -library xil_defaultlib {
   /media/sk/Common/comp3211/proj/proj.srcs/sources_1/imports/sources_1/instruction_memory.vhd
   /media/sk/Common/comp3211/proj/proj.srcs/sources_1/imports/sources_1/mux_2to1_16b.vhd
   /media/sk/Common/comp3211/proj/proj.srcs/sources_1/imports/sources_1/mux_2to1_1b.vhd
-  /media/sk/Common/comp3211/proj/proj.srcs/sources_1/imports/sources_1/mux_2to1_4b.vhd
+  /media/sk/Common/comp3211/proj/proj.srcs/sources_1/new/mux_2to1_5b.vhd
   /media/sk/Common/comp3211/proj/proj.srcs/sources_1/imports/sources_1/program_counter.vhd
   /media/sk/Common/comp3211/proj/proj.srcs/sources_1/imports/sources_1/register_file.vhd
   /media/sk/Common/comp3211/proj/proj.srcs/sources_1/imports/sources_1/sign_extend_4to16.vhd
@@ -105,6 +106,8 @@ read_xdc /media/sk/Common/comp3211/proj/proj.srcs/constrs_1/imports/new/constrai
 set_property used_in_implementation false [get_files /media/sk/Common/comp3211/proj/proj.srcs/constrs_1/imports/new/constraints.xdc]
 
 set_param ips.enableIPCacheLiteLoad 1
+
+read_checkpoint -auto_incremental -incremental /media/sk/Common/comp3211/proj/proj.srcs/utils_1/imports/synth_1/single_cycle_core.dcp
 close [open __synthesis_is_running__ w]
 
 OPTRACE "synth_design" START { }

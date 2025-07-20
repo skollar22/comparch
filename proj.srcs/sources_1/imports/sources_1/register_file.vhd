@@ -24,20 +24,24 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity register_file is
+    generic (
+        DATA_SIZE : integer := 32;
+        REG_SIZE : integer := 5
+    );
     port ( reset           : in  std_logic;
            clk             : in  std_logic;
-           read_register_a : in  std_logic_vector(3 downto 0);
-           read_register_b : in  std_logic_vector(3 downto 0);
+           read_register_a : in  std_logic_vector((REG_SIZE - 1) downto 0);
+           read_register_b : in  std_logic_vector((REG_SIZE - 1) downto 0);
            write_enable    : in  std_logic;
-           write_register  : in  std_logic_vector(3 downto 0);
-           write_data      : in  std_logic_vector(15 downto 0);
-           read_data_a     : out std_logic_vector(15 downto 0);
-           read_data_b     : out std_logic_vector(15 downto 0) );
+           write_register  : in  std_logic_vector((REG_SIZE - 1) downto 0);
+           write_data      : in  std_logic_vector((DATA_SIZE - 1) downto 0);
+           read_data_a     : out std_logic_vector((DATA_SIZE - 1) downto 0);
+           read_data_b     : out std_logic_vector((DATA_SIZE - 1) downto 0) );
 end register_file;
 
 architecture behavioral of register_file is
 
-type reg_file is array(0 to 15) of std_logic_vector(15 downto 0);
+type reg_file is array(0 to ((2 ** REG_SIZE) - 1)) of std_logic_vector((DATA_SIZE - 1) downto 0);
 signal sig_regfile : reg_file;
 
 begin
@@ -63,7 +67,7 @@ begin
         
         if (reset = '1') then
             -- initial values of the registers - reset to zeroes
-            var_regfile := (others => X"0000");
+            var_regfile := (others => (others => '0'));
 
         elsif (rising_edge (clk) and write_enable = '1') then
             -- register write on the falling clock edge
@@ -71,7 +75,7 @@ begin
         end if;
 
         -- enforces value zero for register $0
-        var_regfile(0) := X"0000";
+        var_regfile(0) := X"00000000";
 
         -- continuous read of the registers at location read_register_a
         -- and read_register_b

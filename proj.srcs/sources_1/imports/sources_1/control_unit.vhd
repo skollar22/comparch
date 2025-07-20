@@ -42,7 +42,7 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity control_unit is
-    port ( opcode     : in  std_logic_vector(3 downto 0);
+    port ( opcode     : in  std_logic_vector(5 downto 0);
            reg_dst    : out std_logic;
            reg_write  : out std_logic;
            alu_src    : out std_logic;
@@ -55,12 +55,12 @@ end control_unit;
 
 architecture behavioural of control_unit is
 
-constant OP_LOAD  : std_logic_vector(3 downto 0) := "1110";
-constant OP_STORE : std_logic_vector(3 downto 0) := "0100";
-constant OP_ADD   : std_logic_vector(3 downto 0) := "1000";
-constant OP_BEQ   : std_logic_vector(3 downto 0) := "0001";
-constant OP_DISP  : std_logic_vector(3 downto 0) := "0110";
-constant OP_SWLD  : std_logic_vector(3 downto 0) := "1100";
+constant OP_LOAD  : std_logic_vector(5 downto 0) := "111000";
+constant OP_STORE : std_logic_vector(5 downto 0) := "010000";
+constant OP_ADD   : std_logic_vector(5 downto 0) := "100000";
+constant OP_BEQ   : std_logic_vector(5 downto 0) := "000100";
+constant OP_DISP  : std_logic_vector(5 downto 0) := "011000";
+constant OP_SWLD  : std_logic_vector(5 downto 0) := "110000";
 
 begin
 

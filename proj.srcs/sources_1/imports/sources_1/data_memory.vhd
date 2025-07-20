@@ -24,17 +24,21 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity data_memory is
+    generic (
+        DATA_SIZE : integer := 32;
+        ADDR_SIZE : integer := 8
+    );
     port ( reset        : in  std_logic;
            clk          : in  std_logic;
            write_enable : in  std_logic;
-           write_data   : in  std_logic_vector(15 downto 0);
-           addr_in      : in  std_logic_vector(3 downto 0);
-           data_out     : out std_logic_vector(15 downto 0) );
+           write_data   : in  std_logic_vector((DATA_SIZE - 1) downto 0);
+           addr_in      : in  std_logic_vector((ADDR_SIZE - 1) downto 0);
+           data_out     : out std_logic_vector((DATA_SIZE - 1) downto 0) );
 end data_memory;
 
 architecture behavioral of data_memory is
 
-type mem_array is array(0 to 15) of std_logic_vector(15 downto 0);
+type mem_array is array(0 to ((2 ** ADDR_SIZE) - 1)) of std_logic_vector((DATA_SIZE - 1) downto 0);
 signal sig_data_mem : mem_array;
 
 begin
@@ -52,22 +56,7 @@ begin
         
         if (reset = '1') then
             -- initial values of the data memory : reset to zero 
-            var_data_mem(0)  := X"0000";
-            var_data_mem(1)  := X"0001";
-            var_data_mem(2)  := X"0002";
-            var_data_mem(3)  := X"aaaa";
-            var_data_mem(4)  := X"0000";
-            var_data_mem(5)  := X"0000";
-            var_data_mem(6)  := X"0000";
-            var_data_mem(7)  := X"0000";
-            var_data_mem(8)  := X"0000";
-            var_data_mem(9)  := X"0000";
-            var_data_mem(10) := X"0000";
-            var_data_mem(11) := X"0000";
-            var_data_mem(12) := X"0000";
-            var_data_mem(13) := X"0000";
-            var_data_mem(14) := X"0000";
-            var_data_mem(15) := X"0000";
+            var_data_mem := (others => (others => '0'));
 
         elsif (rising_edge (clk) and write_enable = '1') then
             -- memory writes on the falling clock edge

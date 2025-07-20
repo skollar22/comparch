@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date         : Sat Jul 19 12:13:50 2025
+| Date         : Sun Jul 20 14:22:31 2025
 | Host         : sk-linux-mint running 64-bit Linux Mint 22.1
 | Command      : report_control_sets -verbose -file single_cycle_core_control_sets_placed.rpt
 | Design       : single_cycle_core
@@ -23,11 +23,11 @@ Table of Contents
 +----------------------------------------------------------+-------+
 |                          Status                          | Count |
 +----------------------------------------------------------+-------+
-| Total control sets                                       |    30 |
-|    Minimum number of control sets                        |    30 |
+| Total control sets                                       |     0 |
+|    Minimum number of control sets                        |     0 |
 |    Addition due to synthesis replication                 |     0 |
 |    Addition due to physical synthesis replication        |     0 |
-| Unused register locations in slices containing registers |     7 |
+| Unused register locations in slices containing registers |     0 |
 +----------------------------------------------------------+-------+
 * Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
 ** Run report_qor_suggestions for automated merging and remapping suggestions
@@ -39,15 +39,15 @@ Table of Contents
 +--------------------+-------+
 |       Fanout       | Count |
 +--------------------+-------+
-| Total control sets |    30 |
+| Total control sets |     0 |
 | >= 0 to < 4        |     0 |
-| >= 4 to < 6        |     1 |
-| >= 6 to < 8        |     1 |
+| >= 4 to < 6        |     0 |
+| >= 6 to < 8        |     0 |
 | >= 8 to < 10       |     0 |
 | >= 10 to < 12      |     0 |
 | >= 12 to < 14      |     0 |
 | >= 14 to < 16      |     0 |
-| >= 16              |    28 |
+| >= 16              |     0 |
 +--------------------+-------+
 * Control sets can be remapped at either synth_design or opt_design
 
@@ -58,51 +58,20 @@ Table of Contents
 +--------------+-----------------------+------------------------+-----------------+--------------+
 | Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
 +--------------+-----------------------+------------------------+-----------------+--------------+
-| No           | No                    | No                     |              63 |           31 |
-| No           | No                    | Yes                    |               4 |            1 |
-| No           | Yes                   | No                     |              23 |            8 |
-| Yes          | No                    | No                     |              47 |           16 |
-| Yes          | No                    | Yes                    |             384 |           90 |
-| Yes          | Yes                   | No                     |              16 |            3 |
+| No           | No                    | No                     |               0 |            0 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |               0 |            0 |
+| Yes          | No                    | No                     |               0 |            0 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |               0 |            0 |
 +--------------+-----------------------+------------------------+-----------------+--------------+
 
 
 4. Detailed Control Set Information
 -----------------------------------
 
-+----------------+----------------------------------+--------------------------------------+------------------+----------------+--------------+
-|  Clock Signal  |           Enable Signal          |           Set/Reset Signal           | Slice Load Count | Bel Load Count | Bels / Slice |
-+----------------+----------------------------------+--------------------------------------+------------------+----------------+--------------+
-|  clk_IBUF_BUFG |                                  | btnL_IBUF                            |                1 |              4 |         4.00 |
-|  clk_IBUF_BUFG |                                  | id_ex_reg/var_ctrl[6]_i_1_n_0        |                1 |              7 |         7.00 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_5[0]  | btnL_IBUF                            |                3 |             16 |         5.33 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_14[0] | btnL_IBUF                            |                4 |             16 |         4.00 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_13[0] | btnL_IBUF                            |                4 |             16 |         4.00 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_12[0] | btnL_IBUF                            |                7 |             16 |         2.29 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_10[0] | btnL_IBUF                            |                3 |             16 |         5.33 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_1[0]  | btnL_IBUF                            |                3 |             16 |         5.33 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_8[0]  | btnL_IBUF                            |                3 |             16 |         5.33 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_7[0]  | btnL_IBUF                            |                4 |             16 |         4.00 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_6[0]  | btnL_IBUF                            |                5 |             16 |         3.20 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_4[0]  | btnL_IBUF                            |                5 |             16 |         3.20 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_3[0]  | btnL_IBUF                            |                3 |             16 |         5.33 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_2[0]  | btnL_IBUF                            |                3 |             16 |         5.33 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_11[0] | btnL_IBUF                            |                4 |             16 |         4.00 |
-|  clk_IBUF_BUFG | mem_wb_reg/var_ctrl_reg[3]_1[0]  | btnL_IBUF                            |                5 |             16 |         3.20 |
-|  clk_IBUF_BUFG | mem_wb_reg/var_ctrl_reg[0]_0[0]  | btnL_IBUF                            |                6 |             16 |         2.67 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_0[0]  | btnL_IBUF                            |                3 |             16 |         5.33 |
-|  clk_IBUF_BUFG | mem_wb_reg/var_ctrl_reg[3]_5[0]  | btnL_IBUF                            |                2 |             16 |         8.00 |
-|  clk_IBUF_BUFG | mem_wb_reg/var_ctrl_reg[3]_4[0]  | btnL_IBUF                            |                3 |             16 |         5.33 |
-|  clk_IBUF_BUFG | mem_wb_reg/var_ctrl_reg[3]_3[0]  | btnL_IBUF                            |                5 |             16 |         3.20 |
-|  clk_IBUF_BUFG | mem_wb_reg/var_ctrl_reg[3]_2[0]  | btnL_IBUF                            |                2 |             16 |         8.00 |
-|  clk_IBUF_BUFG | ex_mem_reg/var_ctrl_reg[4]_9[0]  | btnL_IBUF                            |                3 |             16 |         5.33 |
-|  clk_IBUF_BUFG | id_ex_reg/E[0]                   | id_ex_reg/SR[0]                      |                3 |             16 |         5.33 |
-|  clk_IBUF_BUFG | ex_mem_reg/E[0]                  | btnL_IBUF                            |                3 |             16 |         5.33 |
-|  clk_IBUF_BUFG | mem_wb_reg/E[0]                  | btnL_IBUF                            |                5 |             16 |         3.20 |
-|  clk_IBUF_BUFG | mem_wb_reg/var_ctrl_reg[3]_0[0]  | btnL_IBUF                            |                2 |             16 |         8.00 |
-|  clk_IBUF_BUFG |                                  | ex_mem_reg/var_read_data[15]_i_1_n_0 |                7 |             16 |         2.29 |
-|  clk_IBUF_BUFG | id_ex_reg/var_imm_16b[2]_i_1_n_0 |                                      |               16 |             47 |         2.94 |
-|  clk_IBUF_BUFG |                                  |                                      |               31 |             63 |         2.03 |
-+----------------+----------------------------------+--------------------------------------+------------------+----------------+--------------+
++--------------+---------------+------------------+------------------+----------------+--------------+
+| Clock Signal | Enable Signal | Set/Reset Signal | Slice Load Count | Bel Load Count | Bels / Slice |
++--------------+---------------+------------------+------------------+----------------+--------------+
 
 

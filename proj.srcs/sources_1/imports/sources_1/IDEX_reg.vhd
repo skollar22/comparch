@@ -32,47 +32,52 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity IDEX_reg is
-  Port (
-    read_data_1         : in std_logic_vector(15 downto 0);
-    read_data_2         : in std_logic_vector(15 downto 0);
-    imm_ext16b          : in std_logic_vector(15 downto 0);
-    read_reg_1          : in std_logic_vector(3 downto 0);
-    read_reg_2          : in std_logic_vector(3 downto 0);
-    write_reg           : in std_logic_vector(3 downto 0);
-    next_pc             : in std_logic_vector(3 downto 0);
-    ex_ctrl             : in std_logic_vector(1 downto 0);
-    mem_ctrl            : in std_logic;
-    wb_ctrl             : in std_logic_vector(3 downto 0);
-    clk                 : in std_logic;
-    flush               : in std_logic;
-    stall               : in std_logic;
-    read_out_1          : out std_logic_vector(15 downto 0);
-    read_out_2          : out std_logic_vector(15 downto 0);
-    imm16b              : out std_logic_vector(15 downto 0);
-    imm4b               : out std_logic_vector(3 downto 0);
-    rr_out_1            : out std_logic_vector(3 downto 0);
-    rr_out_2            : out std_logic_vector(3 downto 0);
-    wr_out              : out std_logic_vector(3 downto 0);
-    pc_out              : out std_logic_vector(3 downto 0);
-    mem_ctrl_out        : out std_logic;
-    wb_ctrl_out         : out std_logic_vector(3 downto 0);
-    alu_src             : out std_logic;
-    pc_add              : out std_logic
-  );
+    generic (
+        PC_SIZE : integer := 8;
+        DATA_SIZE : integer := 32;
+        REG_SIZE : integer := 5
+    );
+    Port (
+        read_data_1         : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        read_data_2         : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        imm_ext32b          : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        read_reg_1          : in std_logic_vector((REG_SIZE - 1) downto 0);
+        read_reg_2          : in std_logic_vector((REG_SIZE - 1) downto 0);
+        write_reg           : in std_logic_vector((REG_SIZE - 1) downto 0);
+        next_pc             : in std_logic_vector((PC_SIZE - 1) downto 0);
+        ex_ctrl             : in std_logic_vector(1 downto 0);
+        mem_ctrl            : in std_logic;
+        wb_ctrl             : in std_logic_vector(3 downto 0);
+        clk                 : in std_logic;
+        flush               : in std_logic;
+        stall               : in std_logic;
+        read_out_1          : out std_logic_vector((DATA_SIZE - 1) downto 0);
+        read_out_2          : out std_logic_vector((DATA_SIZE - 1) downto 0);
+        imm32b              : out std_logic_vector((DATA_SIZE - 1) downto 0);
+        imm8b               : out std_logic_vector((PC_SIZE - 1) downto 0);
+        rr_out_1            : out std_logic_vector((REG_SIZE - 1) downto 0);
+        rr_out_2            : out std_logic_vector((REG_SIZE - 1) downto 0);
+        wr_out              : out std_logic_vector((REG_SIZE - 1) downto 0);
+        pc_out              : out std_logic_vector((PC_SIZE - 1) downto 0);
+        mem_ctrl_out        : out std_logic;
+        wb_ctrl_out         : out std_logic_vector(3 downto 0);
+        alu_src             : out std_logic;
+        pc_add              : out std_logic 
+    );
 end IDEX_reg;
 
 architecture Behavioral of IDEX_reg is
 
 begin
 
-process (clk, flush, stall, read_data_1, read_data_2, imm_ext16b, read_reg_1, read_reg_2, write_reg, next_pc)
-variable var_read_data_1    : std_logic_vector(15 downto 0);
-variable var_read_data_2    : std_logic_vector(15 downto 0);
-variable var_imm_16b        : std_logic_vector(15 downto 0);
-variable var_rr1            : std_logic_vector(3 downto 0);
-variable var_rr2            : std_logic_vector(3 downto 0);
-variable var_wr             : std_logic_vector(3 downto 0);
-variable var_pc             : std_logic_vector(3 downto 0);
+process (clk, flush, stall, read_data_1, read_data_2, imm_ext32b, read_reg_1, read_reg_2, write_reg, next_pc)
+variable var_read_data_1    : std_logic_vector((DATA_SIZE - 1) downto 0);
+variable var_read_data_2    : std_logic_vector((DATA_SIZE - 1) downto 0);
+variable var_imm_32b        : std_logic_vector((DATA_SIZE - 1) downto 0);
+variable var_rr1            : std_logic_vector((REG_SIZE - 1) downto 0);
+variable var_rr2            : std_logic_vector((REG_SIZE - 1) downto 0);
+variable var_wr             : std_logic_vector((REG_SIZE - 1) downto 0);
+variable var_pc             : std_logic_vector((PC_SIZE - 1) downto 0);
 variable var_ctrl           : std_logic_vector(6 downto 0);
 begin
     if rising_edge (clk) then
@@ -81,7 +86,7 @@ begin
         else
             var_read_data_1     := read_data_1;
             var_read_data_2     := read_data_2;
-            var_imm_16b         := imm_ext16b;
+            var_imm_32b         := imm_ext32b;
             var_rr1             := read_reg_1;
             var_rr2             := read_reg_2;
             var_wr              := write_reg;
@@ -92,8 +97,8 @@ begin
     
     read_out_1          <= var_read_data_1;
     read_out_2          <= var_read_data_2;
-    imm16b              <= var_imm_16b;
-    imm4b               <= var_imm_16b(3 downto 0);
+    imm32b              <= var_imm_32b;
+    imm8b               <= var_imm_32b((PC_SIZE - 1) downto 0);
     rr_out_1            <= var_rr1;
     rr_out_2            <= var_rr2;
     wr_out              <= var_wr;

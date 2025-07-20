@@ -32,23 +32,27 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity forwarding_unit is
-  Port (
-    -- control
-    id_reg_1        : in std_logic_vector(3 downto 0);
-    id_reg_2        : in std_logic_vector(3 downto 0);
-    ex_write_reg    : in std_logic_vector(3 downto 0);
-    mem_write_reg   : in std_logic_vector(3 downto 0);
-    
-    -- data
-    id_reg_1_data   : in std_logic_vector(15 downto 0);
-    id_reg_2_data   : in std_logic_vector(15 downto 0);
-    ex_wr_data      : in std_logic_vector(15 downto 0);
-    mem_wr_data     : in std_logic_vector(15 downto 0);
-    
-    -- outputs
-    reg_1_out       : out std_logic_vector(15 downto 0);
-    reg_2_out       : out std_logic_vector(15 downto 0)
-  );
+    generic (
+        DATA_SIZE : integer := 32;
+        REG_SIZE : integer := 5
+    );
+    Port (
+        -- control
+        id_reg_1        : in std_logic_vector((REG_SIZE - 1) downto 0);
+        id_reg_2        : in std_logic_vector((REG_SIZE - 1) downto 0);
+        ex_write_reg    : in std_logic_vector((REG_SIZE - 1) downto 0);
+        mem_write_reg   : in std_logic_vector((REG_SIZE - 1) downto 0);
+        
+        -- data
+        id_reg_1_data   : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        id_reg_2_data   : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        ex_wr_data      : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        mem_wr_data     : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        
+        -- outputs
+        reg_1_out       : out std_logic_vector((DATA_SIZE - 1) downto 0);
+        reg_2_out       : out std_logic_vector((DATA_SIZE - 1) downto 0)
+    );
 end forwarding_unit;
 
 architecture Behavioral of forwarding_unit is
@@ -61,7 +65,7 @@ process(id_reg_1, id_reg_2, ex_write_reg,
 
 begin
 
-    if id_reg_1 = "0000" then
+    if id_reg_1 = "00000" then
         reg_1_out <= (others => '0');
     elsif id_reg_1 = ex_write_reg then
         reg_1_out <= ex_wr_data;
@@ -71,7 +75,7 @@ begin
         reg_1_out <= id_reg_1_data;
     end if;
     
-    if id_reg_2 = "0000" then
+    if id_reg_2 = "00000" then
         reg_2_out <= (others => '0');
     elsif id_reg_2 = ex_write_reg then
         reg_2_out <= ex_wr_data;

@@ -32,20 +32,25 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity MEMWB_reg is
-  Port (
-    alu_result          : in std_logic_vector(15 downto 0);
-    mem_result          : in std_logic_vector(15 downto 0);
-    write_reg           : in std_logic_vector(3 downto 0);
-    wb_ctrl             : in std_logic_vector(3 downto 0);
-    clk                 : in std_logic;
-    alu_result_out      : out std_logic_vector(15 downto 0);
-    mem_result_out      : out std_logic_vector(15 downto 0);
-    write_reg_out       : out std_logic_vector(3 downto 0);
-    reg_write           : out std_logic;
-    mem_to_reg          : out std_logic;
-    switch_in           : out std_logic;
-    led_write           : out std_logic
-  );
+    generic (
+        PC_SIZE : integer := 8;
+        DATA_SIZE : integer := 32;
+        REG_SIZE : integer := 5
+    );
+    Port (
+        alu_result          : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        mem_result          : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        write_reg           : in std_logic_vector((REG_SIZE - 1) downto 0);
+        wb_ctrl             : in std_logic_vector(3 downto 0);
+        clk                 : in std_logic;
+        alu_result_out      : out std_logic_vector((DATA_SIZE - 1) downto 0);
+        mem_result_out      : out std_logic_vector((DATA_SIZE - 1) downto 0);
+        write_reg_out       : out std_logic_vector((REG_SIZE - 1) downto 0);
+        reg_write           : out std_logic;
+        mem_to_reg          : out std_logic;
+        switch_in           : out std_logic;
+        led_write           : out std_logic
+    );
 end MEMWB_reg;
 
 architecture Behavioral of MEMWB_reg is
@@ -53,9 +58,9 @@ architecture Behavioral of MEMWB_reg is
 begin
 
 process (clk, alu_result, mem_result, write_reg, wb_ctrl)
-variable var_alu_result     : std_logic_vector(15 downto 0);
-variable var_mem_result     : std_logic_vector(15 downto 0);
-variable var_write_reg      : std_logic_vector(3 downto 0);
+variable var_alu_result     : std_logic_vector((DATA_SIZE - 1) downto 0);
+variable var_mem_result     : std_logic_vector((DATA_SIZE - 1) downto 0);
+variable var_write_reg      : std_logic_vector((REG_SIZE - 1) downto 0);
 variable var_ctrl           : std_logic_vector(3 downto 0);
 begin
 
