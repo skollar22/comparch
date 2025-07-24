@@ -1,0 +1,11 @@
+/.git/
+/.Xil/
+/proj.cache/
+/proj.hw/
+/proj.ip_user_files/
+/proj.runs/
+/proj.sim/
+proj.xpr
+Single_cycle_core_TB_VHDL_behav.wcfg
+vivado.jou
+vivado.log
