@@ -22,23 +22,26 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity adder_16b is
-    port ( src_a     : in  std_logic_vector(15 downto 0);
-           src_b     : in  std_logic_vector(15 downto 0);
-           sum       : out std_logic_vector(15 downto 0);
+entity adder_32b is
+    generic (
+            ADD_SIZE : integer := 32
+        );
+    port ( src_a     : in  std_logic_vector((ADD_SIZE - 1) downto 0);
+           src_b     : in  std_logic_vector((ADD_SIZE - 1) downto 0);
+           sum       : out std_logic_vector((ADD_SIZE - 1) downto 0);
            equal     : out std_logic;
            carry_out : out std_logic );
-end adder_16b;
+end adder_32b;
 
-architecture behavioural of adder_16b is
+architecture behavioural of adder_32b is
 
-signal sig_result : std_logic_vector(16 downto 0);
+signal sig_result : std_logic_vector(ADD_SIZE downto 0);
 
 begin
 
     sig_result <= ('0' & src_a) + ('0' & src_b);
-    sum        <= sig_result(15 downto 0);
-    carry_out  <= sig_result(16);
+    sum        <= sig_result((ADD_SIZE - 1) downto 0);
+    carry_out  <= sig_result(ADD_SIZE);
     equal      <= '1' when src_a = src_b else '0';
     
 end behavioural;

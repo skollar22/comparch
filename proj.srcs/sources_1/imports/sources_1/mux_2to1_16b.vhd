@@ -22,14 +22,14 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity mux_2to1_16b is
+entity mux_2to1_32b is
     port ( mux_select : in  std_logic;
-           data_a     : in  std_logic_vector(15 downto 0);
-           data_b     : in  std_logic_vector(15 downto 0);
-           data_out   : out std_logic_vector(15 downto 0) );
-end mux_2to1_16b;
+           data_a     : in  std_logic_vector(31 downto 0);
+           data_b     : in  std_logic_vector(31 downto 0);
+           data_out   : out std_logic_vector(31 downto 0) );
+end mux_2to1_32b;
 
-architecture structural of mux_2to1_16b is
+architecture structural of mux_2to1_32b is
 
 component mux_2to1_1b is
     port ( mux_select : in  std_logic;
@@ -41,7 +41,7 @@ end component;
 begin
 
     -- this for-generate-loop replicates 16 single-bit 2-to-1 mux
-    muxes : for i in 15 downto 0 generate
+    muxes : for i in 31 downto 0 generate
         bit_mux : mux_2to1_1b 
         port map ( mux_select => mux_select,
                    data_a     => data_a(i),

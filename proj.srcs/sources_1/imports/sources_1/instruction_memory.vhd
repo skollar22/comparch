@@ -25,15 +25,19 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity instruction_memory is
+    generic (
+        PC_SIZE : integer := 8;
+        DATA_SIZE : integer := 32
+    );
     port ( reset    : in  std_logic;
            clk      : in  std_logic;
-           addr_in  : in  std_logic_vector(7 downto 0);
-           insn_out : out std_logic_vector(31 downto 0) );
+           addr_in  : in  std_logic_vector((PC_SIZE - 1) downto 0);
+           insn_out : out std_logic_vector((DATA_SIZE - 1) downto 0) );
 end instruction_memory;
 
 architecture behavioral of instruction_memory is
 
-type mem_array is array(0 to 255) of std_logic_vector(31 downto 0);
+type mem_array is array(0 to 255) of std_logic_vector((DATA_SIZE - 1) downto 0);
 signal sig_insn_mem : mem_array;
 
 begin
@@ -73,6 +77,9 @@ begin
 --            var_insn_mem(13) := X"1007"; -- beq $0 $0 7
 --            var_insn_mem(14) := X"0000"; -- nop
 --            var_insn_mem(15) := X"100e"; -- beq $0 $0 -2 ; infinite loop
+
+
+              var_insn_mem := (others => (others => '0'));
             
 --            var_insn_mem(0) := X"c010"; -- load from switch into $1
 --            var_insn_mem(1) := X"4010"; -- store $1 0($0)
@@ -91,7 +98,6 @@ begin
 --            var_insn_mem(14) := X"4013"; -- store $1 3($0)
 --            var_insn_mem(15) := X"0000"; -- nop
 
-              var_insn_mem := (others => (others => '0'));
         
         end if;
         

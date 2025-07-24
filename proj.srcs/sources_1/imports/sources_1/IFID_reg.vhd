@@ -32,20 +32,24 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity IFID_reg is
-  Port (
-    instr       : in std_logic_vector(15 downto 0);
-    next_pc     : in std_logic_vector(3 downto 0);
-    flush       : in std_logic;
-    stall       : in std_logic;
-    clk         : in std_logic;
-    opcode      : out std_logic_vector(3 downto 0);
-    rs          : out std_logic_vector(3 downto 0);
-    rt          : out std_logic_vector(3 downto 0);
-    rd          : out std_logic_vector(3 downto 0);
-    imm4b       : out std_logic_vector(3 downto 0);
-    imm8b       : out std_logic_vector(7 downto 0);
-    pc_out      : out std_logic_vector(3 downto 0)
-   );
+    generic (
+        PC_SIZE : integer := 8;
+        DATA_SIZE : integer := 32;
+        REG_SIZE : integer := 5
+    );
+    Port (
+        instr       : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        next_pc     : in std_logic_vector((PC_SIZE - 1) downto 0);
+        flush       : in std_logic;
+        stall       : in std_logic;
+        clk         : in std_logic;
+        opcode      : out std_logic_vector(5 downto 0);
+        rs          : out std_logic_vector((REG_SIZE - 1) downto 0);
+        rt          : out std_logic_vector((REG_SIZE - 1) downto 0);
+        rd          : out std_logic_vector((REG_SIZE - 1) downto 0);
+        imm16b      : out std_logic_vector(15 downto 0);
+        pc_out      : out std_logic_vector((PC_SIZE - 1) downto 0)
+    );
 end IFID_reg;
 
 architecture Behavioral of IFID_reg is
@@ -53,8 +57,8 @@ architecture Behavioral of IFID_reg is
 begin
 
 process(clk, instr, next_pc, flush, stall)
-variable reg : std_logic_vector(15 downto 0);
-variable pc_reg : std_logic_vector(3 downto 0);
+variable reg : std_logic_vector((DATA_SIZE - 1) downto 0);
+variable pc_reg : std_logic_vector((PC_SIZE - 1) downto 0);
 begin
     if rising_edge (clk) then
         if flush = '1' then
@@ -69,13 +73,14 @@ begin
         end if;
     end if;
     
-    opcode <= reg(15 downto 12);
-    rs     <= reg(11 downto 8);
-    rt     <= reg(7 downto 4);
-    rd     <= reg(3 downto 0);
-    imm4b  <= reg(3 downto 0);
-    imm8b  <= reg(7 downto 0);
+    opcode <= reg((DATA_SIZE - 1) downto (DATA_SIZE - 6));
+    rs     <= reg((DATA_SIZE - 7) downto (DATA_SIZE - 6 - REG_SIZE));
+    rt     <= reg((DATA_SIZE - 7 - REG_SIZE) downto (DATA_SIZE - 6 - (2 * REG_SIZE)));
+    rd     <= reg((DATA_SIZE - 7 - (2 * REG_SIZE)) downto (DATA_SIZE - 6 - (3 * REG_SIZE)));
+    imm16b <= reg(15 downto 0);
     pc_out <= pc_reg;
+    
+    -- TODO: shamnt et al outputs for r-type instructions
 
 end process;
 

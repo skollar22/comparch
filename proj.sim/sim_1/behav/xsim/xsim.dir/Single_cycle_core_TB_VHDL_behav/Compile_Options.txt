@@ -1,0 +1,1 @@
+--incr --debug "typical" --relax --mt "8" -L "xil_defaultlib" -L "secureip" --snapshot "Single_cycle_core_TB_VHDL_behav" "xil_defaultlib.Single_cycle_core_TB_VHDL" -log "elaborate.log" 

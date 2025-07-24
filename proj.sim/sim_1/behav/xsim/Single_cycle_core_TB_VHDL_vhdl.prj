@@ -1,0 +1,25 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../proj.srcs/sources_1/imports/sources_1/EXMEM_reg.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/IDEX_reg.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/IFID_reg.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/MEMWB_reg.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/adder_16b.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/adder_4b.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/control_unit.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/data_memory.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/forwarding_unit.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/hazard_unit.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/instruction_memory.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/mux_2to1_16b.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/mux_2to1_1b.vhd" \
+"../../../../proj.srcs/sources_1/new/mux_2to1_5b.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/program_counter.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/register_file.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/sign_extend_4to16.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/single_cycle_core.vhd" \
+"../../../../proj.srcs/sources_1/imports/sources_1/single_register.vhd" \
+"../../../../proj.srcs/sim_1/imports/VHDL/single_cycle_core_TB_VHDL.vhd" \
+
+# Do not sort compile order
+nosort

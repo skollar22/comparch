@@ -26,10 +26,12 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity program_counter is
+    generic (
+            PC_SIZE : integer := 8 );
     port ( reset    : in  std_logic;
            clk      : in  std_logic;
-           addr_in  : in  std_logic_vector(7 downto 0);
-           addr_out : out std_logic_vector(7 downto 0) );
+           addr_in  : in  std_logic_vector((PC_SIZE - 1) downto 0);
+           addr_out : out std_logic_vector((PC_SIZE - 1) downto 0) );
 end program_counter;
 
 architecture behavioral of program_counter is

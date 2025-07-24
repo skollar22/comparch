@@ -1,0 +1,24 @@
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:36:09 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Sun Jul 20 14:21:31 2025
+# Process ID: 1821217
+# Current directory: /media/sk/Common/comp3211/proj/proj.runs/synth_1
+# Command line: vivado -log single_cycle_core.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source single_cycle_core.tcl
+# Log file: /media/sk/Common/comp3211/proj/proj.runs/synth_1/single_cycle_core.vds
+# Journal file: /media/sk/Common/comp3211/proj/proj.runs/synth_1/vivado.jou
+# Running On        :sk-linux-mint
+# Platform          :Linuxmint
+# Operating System  :Linux Mint 22.1
+# Processor Detail  :11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz
+# CPU Frequency     :800.845 MHz
+# CPU Physical cores:8
+# CPU Logical cores :16
+# Host memory       :33302 MB
+# Swap memory       :0 MB
+# Total Virtual     :33302 MB
+# Available Virtual :10919 MB
+#-----------------------------------------------------------
+source single_cycle_core.tcl -notrace
