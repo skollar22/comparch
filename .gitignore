@@ -4,5 +4,6 @@
 /proj.hw/
 /proj.runs/
 /proj.sim/
+proj.xpr
 vivado.jou
 vivado.log
