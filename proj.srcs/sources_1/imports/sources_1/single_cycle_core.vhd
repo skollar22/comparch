@@ -56,6 +56,7 @@ entity single_cycle_core is
     );
     port ( btnL   : in std_logic;
            clk    : in  std_logic;
+           btnC    : in std_logic;
            sw     : in std_logic_vector (15 downto 0);
            led    : out std_logic_vector (15 downto 0) );
 end single_cycle_core;
@@ -78,6 +79,7 @@ component instruction_memory is
     );
     port ( reset    : in  std_logic;
            clk      : in  std_logic;
+           hlt      : in  std_logic;
            addr_in  : in  std_logic_vector((PC_SIZE - 1) downto 0);
            insn_out : out std_logic_vector((DATA_SIZE - 1) downto 0) );
 end component;
@@ -200,6 +202,7 @@ component hazard_unit is
         branch_pc       : in std_logic_vector((PC_SIZE - 1) downto 0);  -- sig_ex_next_pc / flush pc
         stall_pc        : in std_logic_vector((PC_SIZE - 1) downto 0);  -- pc remains the same as currently is, ie sig_if_curr_pc
         next_pc         : in std_logic_vector((PC_SIZE - 1) downto 0);  -- normal behaviour, ie sig_if_next_pc
+        hlt             : in std_logic;
         imm8b           : in std_logic_vector((PC_SIZE - 1) downto 0);
         id_mem_read     : in std_logic;
         id_reg_rt       : in std_logic_vector((REG_SIZE - 1) downto 0);
@@ -210,6 +213,21 @@ component hazard_unit is
         if_flush        : out std_logic;
         if_stall        : out std_logic;
         new_pc          : out std_logic_vector((PC_SIZE - 1) downto 0)
+    );
+end component;
+
+component halting_unit is
+    generic (
+        DATA_SIZE : integer := 32
+    );
+    Port (
+        reset       : in std_logic;
+        clk         : in std_logic;
+        instr       : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        flush       : in std_logic;
+        stall       : in std_logic;
+        ext_resume  : in std_logic;
+        hlt         : out std_logic
     );
 end component;
 
@@ -361,6 +379,7 @@ signal sig_pc_next_actual       : std_logic_vector((PC_SIZE - 1) downto 0);
 signal sig_alu_equal            : std_logic;
 signal sig_wb_dispr_out         : std_logic_vector (15 downto 0);
 
+signal sig_if_hlt               : std_logic;
 signal sig_if_flush             : std_logic;
 signal sig_if_stall             : std_logic;
 
@@ -439,6 +458,7 @@ begin
     insn_mem : instruction_memory 
     port map ( reset    => btnL,
                clk      => clk,
+               hlt      => sig_if_hlt,
                addr_in  => sig_if_curr_pc,
                insn_out => sig_if_insn );
                
@@ -451,6 +471,7 @@ begin
         branch_pc       => sig_ex_pc_out,  -- sig_ex_next_pc / flush pc
         stall_pc        => sig_if_curr_pc,  -- pc remains the same as currently is, ie sig_if_curr_pc
         next_pc         => sig_if_next_pc,  -- normal behaviour, ie sig_if_next_pc
+        hlt             => sig_if_hlt,
         imm8b           => sig_ex_imm8b,
         id_mem_read     => sig_ex_wb_ctrl_out(2),
         id_reg_rt       => sig_ex_rr_out_2,
@@ -462,6 +483,15 @@ begin
         if_stall        => sig_if_stall,
         new_pc          => sig_pc_next_actual
     );
+    
+    hlt_unit : halting_unit
+    port map ( reset        => btnL,
+               clk          => clk,
+               instr        => sig_if_insn,
+               flush        => sig_if_flush,
+               stall        => sig_if_stall,
+               ext_resume   => btnC,
+               hlt          => sig_if_hlt);
     
     if_id_reg : IFID_reg
     port map (
@@ -497,7 +527,7 @@ begin
                pc_add     => sig_id_pc_add,
                switch_in  => sig_id_switch_in );
 
-    mux_reg_dst : mux_2to1_5b 
+    mux_reg_dst : mux_2to1_5b
     port map ( mux_select => sig_id_reg_dst,
                data_a     => sig_id_rt,
                data_b     => sig_id_rd,

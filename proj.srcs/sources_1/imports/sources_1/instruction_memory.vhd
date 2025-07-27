@@ -31,6 +31,7 @@ entity instruction_memory is
     );
     port ( reset    : in  std_logic;
            clk      : in  std_logic;
+           hlt      : in  std_logic;
            addr_in  : in  std_logic_vector((PC_SIZE - 1) downto 0);
            insn_out : out std_logic_vector((DATA_SIZE - 1) downto 0) );
 end instruction_memory;
@@ -80,6 +81,9 @@ begin
 
 
               var_insn_mem := (others => (others => '0'));
+              
+--            var_insn_mem(0) := X"FC000000"; -- halt
+--            var_insn_mem(1) := X"60000000"; -- display 1 on led
             
 --            var_insn_mem(0) := X"c010"; -- load from switch into $1
 --            var_insn_mem(1) := X"4010"; -- store $1 0($0)
@@ -102,7 +106,13 @@ begin
         end if;
         
         var_addr := conv_integer(addr_in);
-        insn_out <= var_insn_mem(var_addr);
+        
+        if (hlt = '1') then
+            insn_out <= (others => '0');
+        else
+            insn_out <= var_insn_mem(var_addr);
+        end if;
+                    
 
         -- the following are probe signals (for simulation purpose)
         sig_insn_mem <= var_insn_mem;

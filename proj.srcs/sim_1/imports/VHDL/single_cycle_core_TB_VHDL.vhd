@@ -16,6 +16,7 @@ architecture behave of Single_cycle_core_TB_VHDL is
 
  signal r_CLOCK     : std_logic := '0';
  signal r_reset    : std_logic := '0';
+ signal r_ext      : std_logic := '0';
  signal led_array   : std_logic_vector (15 downto 0) := (others => '0');
  signal switches     : std_logic_vector(15 downto 0) := (others => '0');
  
@@ -24,6 +25,7 @@ architecture behave of Single_cycle_core_TB_VHDL is
 component single_cycle_core is
     port ( btnL  : in  std_logic;
            clk    : in  std_logic;
+           btnC    : in  std_logic;
            sw     : in std_logic_vector(15 downto 0);
            led    : out std_logic_vector (15 downto 0) 
        );
@@ -37,6 +39,7 @@ component single_cycle_core is
           port map (
             btnL    => r_reset,
             clk     => r_CLOCK,
+            btnC     => r_ext,
             sw      => switches,
             led     => led_array
             );
@@ -60,9 +63,11 @@ component single_cycle_core is
             
             wait for 32*c_CLOCK_PERIOD ;
             switches <= "0000000000000001";
+            r_ext <= '1';
             
             wait for 32*c_CLOCK_PERIOD ;
             switches <= "0000000000000010";
+            r_ext <= '0';
           
             wait for 2 sec;
            

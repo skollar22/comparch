@@ -43,6 +43,7 @@ entity hazard_unit is
         branch_pc       : in std_logic_vector((PC_SIZE - 1) downto 0);  -- sig_ex_next_pc / flush pc
         stall_pc        : in std_logic_vector((PC_SIZE - 1) downto 0);  -- pc remains the same as currently is, ie sig_if_curr_pc
         next_pc         : in std_logic_vector((PC_SIZE - 1) downto 0);  -- normal behaviour, ie sig_if_next_pc
+        hlt             : in std_logic;
         imm8b           : in std_logic_vector((PC_SIZE - 1) downto 0);
         id_mem_read     : in std_logic;
         id_reg_rt       : in std_logic_vector((REG_SIZE - 1) downto 0);
@@ -61,12 +62,17 @@ architecture Behavioral of hazard_unit is
 begin
 
 process(pc_add, data_1, data_2, next_pc, 
-        branch_pc, stall_pc, imm8b, id_mem_read, 
+        branch_pc, stall_pc, imm8b, hlt, id_mem_read, 
         id_reg_rt, if_reg_rs, id_reg_rt)
 variable temp_pc    : std_logic_vector(PC_SIZE downto 0);
 begin
-
-    if (data_1 = data_2) and (pc_add = '1') then
+    
+    if (hlt = '1') then
+        if_flush <= '1';
+        if_stall <= '0';
+        
+        new_pc <= stall_pc;
+    elsif (data_1 = data_2) and (pc_add = '1') then
         if_flush <= '1';
         if_stall <= '0';
         temp_pc := (('0' & branch_pc) + ('0' & imm8b));
