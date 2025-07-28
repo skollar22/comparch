@@ -22,16 +22,16 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity sign_extend_16to32 is
+entity sign_extend is
     generic (
         DATA_SIZE : integer := 32;
         IMM_SIZE : integer := 16
     );
     port ( data_in  : in  std_logic_vector((IMM_SIZE - 1) downto 0);
            data_out : out std_logic_vector((DATA_SIZE - 1) downto 0) );
-end sign_extend_16to32;
+end sign_extend;
 
-architecture behavioral of sign_extend_16to32 is
+architecture behavioral of sign_extend is
 
 begin
     

@@ -22,7 +22,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-entity adder_8b is
+entity adder is
     generic (
         ADD_SIZE : integer := 8
     );
@@ -30,9 +30,9 @@ entity adder_8b is
            src_b     : in  std_logic_vector((ADD_SIZE - 1) downto 0);
            sum       : out std_logic_vector((ADD_SIZE - 1) downto 0);
            carry_out : out std_logic );
-end adder_8b;
+end adder;
 
-architecture behavioural of adder_8b is
+architecture behavioural of adder is
 
 signal sig_result : std_logic_vector(ADD_SIZE downto 0);
 

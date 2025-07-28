@@ -84,7 +84,7 @@ component instruction_memory is
            insn_out : out std_logic_vector((DATA_SIZE - 1) downto 0) );
 end component;
 
-component sign_extend_16to32 is
+component sign_extend is
     generic (
         DATA_SIZE : integer := 32;
         IMM_SIZE : integer := 16
@@ -93,29 +93,29 @@ component sign_extend_16to32 is
            data_out : out std_logic_vector((DATA_SIZE - 1) downto 0) );
 end component;
 
-component mux_2to1_5b is
+component mux_2to1 is
     generic (
-        REG_SIZE : integer := 5
+        MUX_SIZE : integer
     );
     Port ( mux_select : in STD_LOGIC;
-           data_a : in STD_LOGIC_VECTOR ((REG_SIZE - 1) downto 0);
-           data_b : in STD_LOGIC_VECTOR ((REG_SIZE - 1) downto 0);
-           data_out : out STD_LOGIC_VECTOR ((REG_SIZE - 1) downto 0));
+           data_a : in STD_LOGIC_VECTOR ((MUX_SIZE - 1) downto 0);
+           data_b : in STD_LOGIC_VECTOR ((MUX_SIZE - 1) downto 0);
+           data_out : out STD_LOGIC_VECTOR ((MUX_SIZE - 1) downto 0));
 end component;
 
-component mux_2to1_8b is
-    port ( mux_select : in  std_logic;
-           data_a     : in  std_logic_vector((PC_SIZE - 1) downto 0);
-           data_b     : in  std_logic_vector((PC_SIZE - 1) downto 0);
-           data_out   : out std_logic_vector((PC_SIZE - 1) downto 0) );
-end component;
+--component mux_2to1_8b is
+--    port ( mux_select : in  std_logic;
+--           data_a     : in  std_logic_vector((PC_SIZE - 1) downto 0);
+--           data_b     : in  std_logic_vector((PC_SIZE - 1) downto 0);
+--           data_out   : out std_logic_vector((PC_SIZE - 1) downto 0) );
+--end component;
 
-component mux_2to1_32b is
-    port ( mux_select : in  std_logic;
-           data_a     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
-           data_b     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
-           data_out   : out std_logic_vector((DATA_SIZE - 1) downto 0) );
-end component;
+--component mux_2to1_32b is
+--    port ( mux_select : in  std_logic;
+--           data_a     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
+--           data_b     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
+--           data_out   : out std_logic_vector((DATA_SIZE - 1) downto 0) );
+--end component;
 
 component control_unit is
     port ( opcode     : in  std_logic_vector(5 downto 0);
@@ -153,7 +153,7 @@ component single_register is
            data_out         : out STD_LOGIC_VECTOR (15 downto 0) );
 end component;
 
-component adder_8b is
+component adder is
     generic (
         ADD_SIZE : integer := 8
     );
@@ -449,7 +449,7 @@ begin
                addr_in  => sig_pc_next_actual,
                addr_out => sig_if_curr_pc ); 
 
-    next_pc : adder_8b 
+    next_pc : adder 
     port map ( src_a     => sig_if_curr_pc, 
                src_b     => sig_one_8b,
                sum       => sig_if_next_pc,   
@@ -512,7 +512,11 @@ begin
     --                                   ID STAGE                                                      
     -- ================================================================================================
 
-    sign_extend : sign_extend_16to32 
+    sign_extender : sign_extend
+    generic map (
+                DATA_SIZE => DATA_SIZE,
+                IMM_SIZE => IMM_SIZE
+    )
     port map ( data_in  => sig_id_imm16b,
                data_out => sig_id_imm32b );
 
@@ -527,7 +531,10 @@ begin
                pc_add     => sig_id_pc_add,
                switch_in  => sig_id_switch_in );
 
-    mux_reg_dst : mux_2to1_5b
+    mux_reg_dst : mux_2to1
+    generic map (
+                MUX_SIZE => REG_SIZE
+                )
     port map ( mux_select => sig_id_reg_dst,
                data_a     => sig_id_rt,
                data_b     => sig_id_rd,
@@ -600,7 +607,10 @@ begin
         reg_2_out       => sig_ex_read_data_2
     );
     
-    mux_alu_src : mux_2to1_32b 
+    mux_alu_src : mux_2to1
+    generic map (
+                MUX_SIZE => DATA_SIZE
+                )
     port map ( mux_select => sig_ex_alu_src,
                data_a     => sig_ex_read_data_2,
                data_b     => sig_ex_imm32b,
@@ -660,7 +670,10 @@ begin
     --                                     WB STAGE
     -- =========================================================================================
     
-    mux_mem_to_reg : mux_2to1_32b 
+    mux_mem_to_reg : mux_2to1
+    generic map (
+                MUX_SIZE => DATA_SIZE
+                )
     port map ( mux_select => sig_wb_mem_to_reg,
                data_a     => sig_wb_alu_result_out,
                data_b     => sig_wb_mem_result_out,
@@ -673,12 +686,19 @@ begin
                reset        => btnL,
                data_out     => sig_wb_dispr_out );
     
-    sw_ext : sign_extend_16to32
+    sw_ext : sign_extend
+    generic map (
+                DATA_SIZE => DATA_SIZE,
+                IMM_SIZE => IMM_SIZE
+                )
     port map ( data_in => sw,
                data_out => sig_wb_sw_ext );
     
     
-    mux_final_data_out : mux_2to1_32b
+    mux_final_data_out : mux_2to1
+    generic map (
+                MUX_SIZE => DATA_SIZE
+                )
     port map ( mux_select => sig_wb_switch_in,
                data_a     => sig_wb_alu_or_mem,
                data_b     => sig_wb_sw_ext,
