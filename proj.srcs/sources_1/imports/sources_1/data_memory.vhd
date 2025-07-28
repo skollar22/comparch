@@ -57,6 +57,7 @@ begin
         if (reset = '1') then
             -- initial values of the data memory : reset to zero 
             var_data_mem := (others => (others => '0'));
+            var_data_mem(0) := X"00000001";
 
         elsif (rising_edge (clk) and write_enable = '1') then
             -- memory writes on the falling clock edge

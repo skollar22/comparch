@@ -31,17 +31,17 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity mux_2to1_5b is
+entity mux_2to1 is
     generic (
-        REG_SIZE : integer := 5
+        MUX_SIZE : integer
     );
     Port ( mux_select : in STD_LOGIC;
-           data_a : in STD_LOGIC_VECTOR ((REG_SIZE - 1) downto 0);
-           data_b : in STD_LOGIC_VECTOR ((REG_SIZE - 1) downto 0);
-           data_out : out STD_LOGIC_VECTOR ((REG_SIZE - 1) downto 0));
-end mux_2to1_5b;
+           data_a : in STD_LOGIC_VECTOR ((MUX_SIZE - 1) downto 0);
+           data_b : in STD_LOGIC_VECTOR ((MUX_SIZE - 1) downto 0);
+           data_out : out STD_LOGIC_VECTOR ((MUX_SIZE - 1) downto 0));
+end mux_2to1;
 
-architecture Behavioral of mux_2to1_5b is
+architecture Behavioral of mux_2to1 is
 
 component mux_2to1_1b is
     port ( mux_select : in  std_logic;
@@ -52,8 +52,8 @@ end component;
 
 begin
 
-    -- this for-generate-loop replicates five single-bit 2-to-1 mux
-    muxes : for i in (REG_SIZE - 1) downto 0 generate
+    -- this for-generate-loop replicates MUX_SIZE single-bit 2-to-1 mux
+    muxes : for i in (MUX_SIZE - 1) downto 0 generate
         bit_mux : mux_2to1_1b 
         port map ( mux_select => mux_select,
                    data_a     => data_a(i),

@@ -81,6 +81,10 @@ begin
 
 
               var_insn_mem := (others => (others => '0'));
+              var_insn_mem(0) := X"60000000";
+              var_insn_mem(1) := X"E0010000";
+              var_insn_mem(2) := X"80211000";
+              var_insn_mem(2) := X"40420000";
               
 --            var_insn_mem(0) := X"FC000000"; -- halt
 --            var_insn_mem(1) := X"60000000"; -- display 1 on led
