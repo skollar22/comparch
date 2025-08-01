@@ -22,7 +22,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-entity alu is
+entity mips_alu is
     generic (
         DATA_SIZE : integer := 32
     );
@@ -34,9 +34,9 @@ entity alu is
         zero       : out std_logic;
         carry_out  : out std_logic
     );
-end alu;
+end mips_alu;
 
-architecture Behavioral of alu is
+architecture Behavioral of mips_alu is
     signal a, b : unsigned((DATA_SIZE - 1) downto 0);
     signal res  : unsigned((DATA_SIZE - 1) downto 0);
     signal c    : std_logic;

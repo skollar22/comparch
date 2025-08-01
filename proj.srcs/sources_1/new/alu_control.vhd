@@ -50,7 +50,6 @@ begin
                 alu_op <= "0101";
             when "000100" => -- BEQ
                 alu_op <= "0001"; -- SUB
-            when -- SHIFT instruction
             when others =>
                 alu_op <= "0000"; -- ADD by default
         end case;
