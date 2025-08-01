@@ -35,8 +35,10 @@ entity register_file is
            write_enable    : in  std_logic;
            write_register  : in  std_logic_vector((REG_SIZE - 1) downto 0);
            write_data      : in  std_logic_vector((DATA_SIZE - 1) downto 0);
+           buttons         : in  std_logic_vector(3 downto 0);
            read_data_a     : out std_logic_vector((DATA_SIZE - 1) downto 0);
-           read_data_b     : out std_logic_vector((DATA_SIZE - 1) downto 0) );
+           read_data_b     : out std_logic_vector((DATA_SIZE - 1) downto 0);
+           reg_out         : out std_logic_vector((DATA_SIZE - 1) downto 0) );
 end register_file;
 
 architecture behavioral of register_file is
@@ -68,7 +70,6 @@ begin
         if (reset = '1') then
             -- initial values of the registers - reset to zeroes
             var_regfile := (others => (others => '0'));
-
         elsif (rising_edge (clk) and write_enable = '1') then
             -- register write on the falling clock edge
             var_regfile(var_write_addr) := write_data;
@@ -85,5 +86,23 @@ begin
         -- the following are probe signals (for simulation purpose)
         sig_regfile <= var_regfile;
 
-    end process; 
+    end process;
+    
+    process(clk, reset)
+    begin
+        -- 4 lines for testing
+        --sig_regfile(0) <= "00000000000000000000000000001111";
+        --sig_regfile(1) <= "00000000000000000000000000011111";
+        --sig_regfile(2) <= "00000000000000000000000000111111";
+        --sig_regfile(3) <= "11111111111111111111111111111111";
+        if rising_edge(clk) then
+            case buttons is
+                when "0010" => reg_out <= sig_regfile(0);
+                when "0100" => reg_out <= sig_regfile(1);
+                when "0001" => reg_out <= sig_regfile(2);
+                when "1000" => reg_out <= sig_regfile(3);
+                when others => null;
+            end case;
+        end if;
+    end process;
 end behavioral;
