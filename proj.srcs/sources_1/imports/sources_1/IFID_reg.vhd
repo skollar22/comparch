@@ -48,6 +48,8 @@ entity IFID_reg is
         rt          : out std_logic_vector((REG_SIZE - 1) downto 0);
         rd          : out std_logic_vector((REG_SIZE - 1) downto 0);
         imm16b      : out std_logic_vector(15 downto 0);
+        shamnt      : out std_logic_vector(4 downto 0);
+        shfunct     : out std_logic;
         pc_out      : out std_logic_vector((PC_SIZE - 1) downto 0)
     );
 end IFID_reg;
@@ -78,9 +80,9 @@ begin
     rt     <= reg((DATA_SIZE - 7 - REG_SIZE) downto (DATA_SIZE - 6 - (2 * REG_SIZE)));
     rd     <= reg((DATA_SIZE - 7 - (2 * REG_SIZE)) downto (DATA_SIZE - 6 - (3 * REG_SIZE)));
     imm16b <= reg(15 downto 0);
+    shamnt <= reg(DATA_SIZE - 7 - (3 * REG_SIZE) downto DATA_SIZE - 7 - (3 * REG_SIZE) - 4);
+    shfunct <= reg(0);
     pc_out <= pc_reg;
-    
-    -- TODO: shamnt et al outputs for r-type instructions
 
 end process;
 
