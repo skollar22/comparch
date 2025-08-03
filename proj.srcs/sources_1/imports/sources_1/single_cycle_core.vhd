@@ -479,11 +479,9 @@ signal sig_wb_alu_or_mem            : std_logic_vector((DATA_SIZE - 1) downto 0)
 
 
 signal sig_wb_sw_ext                : std_logic_vector((DATA_SIZE - 1) downto 0);
-
-
-signal sig_alu_op : std_logic_vector(3 downto 0);
-signal sig_alu_zero : std_logic;
-signal sig_ex_opcode : std_logic_vector(5 downto 0);
+signal sig_alu_op                   : std_logic_vector(3 downto 0);
+signal sig_alu_zero                 : std_logic;
+signal sig_ex_opcode                : std_logic_vector(5 downto 0);
 signal sig_buttons                  : std_logic_vector(3 downto 0);
 signal sig_reg_out                  : std_Logic_vector((DATA_SIZE - 1) downto 0);
 
