@@ -72,6 +72,7 @@ std::string handleIType(const char *opcode, std::string operands) {
     result.append(rs);
     result.append(rt);
     result.append(immediate);
+    return result;
 }
 
 std::string handleDispr(const char *opcode, std::string operands) {
@@ -84,12 +85,13 @@ std::string handleDispr(const char *opcode, std::string operands) {
     // remove dollar sign
     reg.erase(0, 1);
 
-    std::string rd = toBinary(std::stoi(reg));
+    std::string rs = toBinary(std::stoi(reg));
 
+    result.append(rs);
     result.append("00000");
     result.append("00000");
-    result.append(rd);
     result.append("00000000000");
+    return result;
 }
 
 std::string handleSwitchLoad(const char *opcode, std::string operands) {
@@ -102,12 +104,13 @@ std::string handleSwitchLoad(const char *opcode, std::string operands) {
     // remove dollar sign
     reg.erase(0, 1);
 
-    std::string rs = toBinary(std::stoi(reg));
+    std::string rd = toBinary(std::stoi(reg));
 
-    result.append(rs);
     result.append("00000");
     result.append("00000");
+    result.append(rd);
     result.append("00000000000");
+    return result;
 }
 
 std::string handleLui(const char *opcode, std::string operands) {
@@ -128,6 +131,7 @@ std::string handleLui(const char *opcode, std::string operands) {
     result.append("00000");
     result.append(rt);
     result.append(immediate);
+    return result;
 }
 
 std::string handleOri(const char *opcode, std::string operands) {
@@ -157,6 +161,53 @@ std::string handleOri(const char *opcode, std::string operands) {
     result.append(rs);
     result.append(rt);
     result.append(immediate);
+    return result;
+}
+
+std::string handleNot(const char *opcode, std::string operands) {
+    std::string result(opcode);
+
+    // get register rd
+    std::string reg = operands.substr(0, operands.find(delimiter));
+    operands.erase(0, operands.find(delimiter) + delimiter.length());
+
+    // remove dollar sign
+    reg.erase(0, 1);
+
+    std::string rd = toBinary(std::stoi(reg));
+
+    // get register rs
+    reg = operands.substr(0, operands.find(delimiter));
+
+    // remove dollar sign
+    reg.erase(0, 1);
+
+    std::string rs = toBinary(std::stoi(reg));
+    operands.erase(0, operands.find(delimiter) + delimiter.length());
+
+    result.append(rs);
+    result.append("00000");
+    result.append(rd);
+
+    // shifting (optional)
+    std::string shift_left = "lsl";
+    std::string shift_right = "lsr";
+    if (operands.find(shift_left) == std::string::npos && operands.find(shift_right) == std::string::npos) {
+        result.append("00000000000");
+        return result;
+    }
+
+    std::string func = operands.substr(0, operands.find(delimiter));
+    operands.erase(0, operands.find(delimiter) + delimiter.length());
+
+    std::string funct = func.find("lsl") != std::string::npos ? "000001" : "000000";
+    
+    std::string shamnt = toBinary(std::stoi(operands));
+
+    
+    result.append(shamnt);
+    result.append(funct);
+    return result;
 }
 
 std::string handleRType(const char *opcode, std::string operands) {
@@ -194,20 +245,18 @@ std::string handleRType(const char *opcode, std::string operands) {
     result.append(rd);
 
     // shifting (optional)
-    std::string comma = ",";
-    if (operands.find(comma) == std::string::npos) {
+    std::string shift_left = "lsl";
+    std::string shift_right = "lsr";
+    if (operands.find(shift_left) == std::string::npos && operands.find(shift_right) == std::string::npos) {
         result.append("00000000000");
         return result;
     }
 
-    operands.erase(0, operands.find(comma) + comma.length());
-    operands.erase(0, operands.find(delimiter) + delimiter.length());
-
     std::string func = operands.substr(0, operands.find(delimiter));
     operands.erase(0, operands.find(delimiter) + delimiter.length());
 
-    std::string funct = func.compare("lsl") == 0 ? "000001" : "000000";
-
+    std::string funct = func.find("lsl") != std::string::npos ? "000001" : "000000";
+    
     std::string shamnt = toBinary(std::stoi(operands));
 
     
@@ -228,19 +277,23 @@ std::string handleLoadStore(const char *opcode, std::string operands) {
 
     std::string rt = toBinary(std::stoi(reg));
 
-    // get immediate
-    std::string bracket("(");
-    std::string imm = operands.substr(0, operands.find(bracket));
-    operands.erase(0, operands.find(bracket) + bracket.length());
-
-    std::string immediate = toBinary(std::stoi(imm), 16);
-
     // get register 2
-    std::string bracket2(")");
-    std::string reg2 = operands.substr(0, operands.find(bracket2));
+    std::string reg2 = operands.substr(0, operands.find(delimiter));
+    operands.erase(0, operands.find(delimiter) + delimiter.length());
+
+    // remove dollar sign
     reg2.erase(0, 1);
 
     std::string rs = toBinary(std::stoi(reg2));
+
+    // get imm
+    std::string bracket("(");
+    std::string imm = operands.substr(0, operands.find(bracket));
+
+    // remove bracket
+    imm.erase(0, 1);
+
+    std::string immediate = toBinary(std::stoi(imm), 16);
 
     result.append(rs);
     result.append(rt);
@@ -294,16 +347,18 @@ int main(int argc, char **argv) {
             res = handleRType(OP_XOR, line);
         } else if (token.compare("slt") == 0) {     // SLT  $d $s $t
             res = handleRType(OP_SLT, line);
-        } else if (token.compare("not") == 0) {     // NOT  $d $s $0
-            res = handleRType(OP_NOT, line);
+        } else if (token.compare("not") == 0) {     // NOT  $d $s
+            res = handleNot(OP_NOT, line);
         } else if (token.compare("lui") == 0) {     // LUI  $d i
             res = handleLui(OP_LUI, line);
         } else if (token.compare("ori") == 0) {     // ORI  $d $s i
             res = handleOri(OP_ORI, line);
         } else if (token.compare("hlt") == 0) {     // HLT
-            res = "1111110000000000000000000000000000";
+            res = "11111100000000000000000000000000";
+        } else if (token.compare("#") == 0 || token.compare("") == 0) {
+            continue;
         } else {
-            printf("Could not find instruction '%s' - options are:\nlw\nsw\nadd\nbeq\ndisp\nswl\nand\nor\nxor\nswp\n", token.c_str());
+            printf("Could not find instruction '%s' - options are:\nlw\nsw\nadd\nbeq\ndisp\ndispr\nswl\nsub\nand\nor\nxor\nslt\nnot\nlui\nori\nhlt\n", token.c_str());
             return 2;
         }
 

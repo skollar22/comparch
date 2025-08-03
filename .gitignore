@@ -10,3 +10,4 @@ Single_cycle_core_TB_VHDL_behav.wcfg
 vivado*.jou
 vivado*.log
 vivado_pid*.str
+parser
