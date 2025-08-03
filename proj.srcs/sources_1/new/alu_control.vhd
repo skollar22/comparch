@@ -50,6 +50,12 @@ begin
                 alu_op <= "0101";
             when "000100" => -- BEQ
                 alu_op <= "0001"; -- SUB
+            when "100111" => -- ANDI
+                alu_op <= "0110";
+            when "101111" => -- LUI
+                alu_op <= "0111";
+            when "100011" => -- NOT
+                alu_op <= "1000";
             when others =>
                 alu_op <= "0000"; -- ADD by default
         end case;
