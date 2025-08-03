@@ -68,7 +68,7 @@ constant OP_OR    : std_logic_vector(5 downto 0) := "100101";
 constant OP_XOR   : std_logic_vector(5 downto 0) := "100110";
 constant OP_SLT   : std_logic_vector(5 downto 0) := "101010";
 constant OP_NOT   : std_logic_vector(5 downto 0) := "100011";
-constant OP_ANDI  : std_logic_vector(5 downto 0) := "100111";
+constant OP_ORI  : std_logic_vector(5 downto 0) := "100111";
 constant OP_LUI   : std_logic_vector(5 downto 0) := "101111";
 
 begin
@@ -92,7 +92,7 @@ begin
                             or opcode = OP_SLT 
                             or opcode = OP_LOAD
                             or opcode = OP_SWLD
-                            or opcode = OP_ANDI
+                            or opcode = OP_ORI
                             or opcode = OP_LUI) 
                             else
                   '0';
@@ -101,7 +101,7 @@ begin
                            or opcode = OP_STORE
                            or opcode = OP_DISP
                            or opcode = OP_DISPR
-                           or opcode = OP_ANDI
+                           or opcode = OP_ORI
                            or opcode = OP_LUI) else
                   '0';
                  

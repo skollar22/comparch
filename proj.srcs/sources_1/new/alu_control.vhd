@@ -50,7 +50,7 @@ begin
                 alu_op <= "0101";
             when "000100" => -- BEQ
                 alu_op <= "0001"; -- SUB
-            when "100111" => -- ANDI
+            when "100111" => -- ORI
                 alu_op <= "0110";
             when "101111" => -- LUI
                 alu_op <= "0111";

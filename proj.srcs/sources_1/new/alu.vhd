@@ -70,8 +70,8 @@ begin
                     res <= (others => '0');
                 end if;
                 c <= '0';
-            when "0110" => -- ANDI
-                res <= a and b;
+            when "0110" => -- ORI
+                res <= a or b;
             when "0111" => -- LUI
                 res <= b((DATA_SIZE / 2) - 1 downto 0) & X"0000";
             when "1000" => -- NOT
