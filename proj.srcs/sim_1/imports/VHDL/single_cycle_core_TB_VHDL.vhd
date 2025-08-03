@@ -19,6 +19,8 @@ architecture behave of Single_cycle_core_TB_VHDL is
  signal r_ext      : std_logic := '0';
  signal led_array   : std_logic_vector (15 downto 0) := (others => '0');
  signal switches     : std_logic_vector(15 downto 0) := (others => '0');
+ signal anodes      : std_logic_vector(3 downto 0) := (others => '0');
+ signal segments    : std_logic_vector(6 downto 0) := (others => '0');
  
 
 -- Component declaration for the Unit Under Test (UUT)
