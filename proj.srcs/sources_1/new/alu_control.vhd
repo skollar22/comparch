@@ -58,6 +58,15 @@ begin
             when "000100" => -- BEQ
                 alu_op <= "0001"; -- SUB
                 shift <= '0';
+            when "100111" => -- ORI
+                alu_op <= "0110";
+                shift <= '0';
+            when "101111" => -- LUI
+                alu_op <= "0111";
+                shift <= '0';
+            when "100011" => -- NOT
+                alu_op <= "1000";
+                shift <= '1';
             when others =>
                 alu_op <= "0000"; -- ADD by default
                 shift <= '0';

@@ -62,21 +62,47 @@ constant OP_BEQ   : std_logic_vector(5 downto 0) := "000100";
 constant OP_DISP  : std_logic_vector(5 downto 0) := "011000";
 constant OP_DISPR : std_logic_vector(5 downto 0) := "011100";
 constant OP_SWLD  : std_logic_vector(5 downto 0) := "110000";
+constant OP_SUB   : std_logic_vector(5 downto 0) := "100010";
+constant OP_AND   : std_logic_vector(5 downto 0) := "100100";
+constant OP_OR    : std_logic_vector(5 downto 0) := "100101";
+constant OP_XOR   : std_logic_vector(5 downto 0) := "100110";
+constant OP_SLT   : std_logic_vector(5 downto 0) := "101010";
+constant OP_NOT   : std_logic_vector(5 downto 0) := "100011";
+constant OP_ORI  : std_logic_vector(5 downto 0) := "100111";
+constant OP_LUI   : std_logic_vector(5 downto 0) := "101111";
 
 begin
 
-    reg_dst    <= '1' when opcode = OP_ADD else
+    reg_dst    <= '1' when (opcode = OP_ADD 
+                            or opcode = OP_SUB
+                            or opcode = OP_AND
+                            or opcode = OP_OR
+                            or opcode = OP_XOR
+                            or opcode = OP_NOT
+                            or opcode = OP_SLT)
+                            else
                   '0';
 
-    reg_write  <= '1' when (opcode = OP_ADD 
+    reg_write  <= '1' when (opcode = OP_ADD
+                            or opcode = OP_SUB
+                            or opcode = OP_AND
+                            or opcode = OP_OR
+                            or opcode = OP_XOR
+                            or opcode = OP_NOT
+                            or opcode = OP_SLT 
                             or opcode = OP_LOAD
-                            or opcode = OP_SWLD) else
+                            or opcode = OP_SWLD
+                            or opcode = OP_ORI
+                            or opcode = OP_LUI) 
+                            else
                   '0';
     
     alu_src    <= '1' when (opcode = OP_LOAD 
                            or opcode = OP_STORE
                            or opcode = OP_DISP
-                           or opcode = OP_DISPR) else
+                           or opcode = OP_DISPR
+                           or opcode = OP_ORI
+                           or opcode = OP_LUI) else
                   '0';
                  
     mem_write  <= '1' when opcode = OP_STORE else

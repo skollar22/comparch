@@ -74,6 +74,12 @@ begin
                     var_res := (others => '0');
                 end if;
                 c <= '0';
+            when "0110" => -- ORI
+                var_res <= a or b;
+            when "0111" => -- LUI
+                var_res <= b(DATA_SIZE) & b((DATA_SIZE / 2) - 1 downto 0) & X"0000";
+            when "1000" => -- NOT
+                var_res <= not a;
             when others =>
                 var_res := (others => '0');
                 c <= '0';
