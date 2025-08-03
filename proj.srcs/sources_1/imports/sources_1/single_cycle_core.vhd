@@ -109,20 +109,6 @@ component mux_2to1 is
            data_out : out STD_LOGIC_VECTOR ((MUX_SIZE - 1) downto 0));
 end component;
 
---component mux_2to1_8b is
---    port ( mux_select : in  std_logic;
---           data_a     : in  std_logic_vector((PC_SIZE - 1) downto 0);
---           data_b     : in  std_logic_vector((PC_SIZE - 1) downto 0);
---           data_out   : out std_logic_vector((PC_SIZE - 1) downto 0) );
---end component;
-
---component mux_2to1_32b is
---    port ( mux_select : in  std_logic;
---           data_a     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
---           data_b     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
---           data_out   : out std_logic_vector((DATA_SIZE - 1) downto 0) );
---end component;
-
 component control_unit is
     port ( opcode     : in  std_logic_vector(5 downto 0);
            reg_dst    : out std_logic;
@@ -171,16 +157,16 @@ component adder is
            carry_out : out std_logic );
 end component;
 
-component adder_32b is
-    generic (
-            ADD_SIZE : integer := 32
-        );
-    port ( src_a     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
-           src_b     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
-           sum       : out std_logic_vector((DATA_SIZE - 1) downto 0);
-           equal     : out std_logic;
-           carry_out : out std_logic );
-end component;
+--component adder_32b is
+--    generic (
+--            ADD_SIZE : integer := 32
+--        );
+--    port ( src_a     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
+--           src_b     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
+--           sum       : out std_logic_vector((DATA_SIZE - 1) downto 0);
+--           equal     : out std_logic;
+--           carry_out : out std_logic );
+--end component;
 
 component data_memory is
     generic (
@@ -193,6 +179,31 @@ component data_memory is
            write_data   : in  std_logic_vector((DATA_SIZE - 1) downto 0);
            addr_in      : in  std_logic_vector((PC_SIZE - 1) downto 0);
            data_out     : out std_logic_vector((DATA_SIZE - 1) downto 0) );
+end component;
+
+component alu_control is
+    port ( opcode : in  std_logic_vector(5 downto 0);
+           funct  : in  std_logic_vector(3 downto 0); -- for R-type
+           alu_op : out std_logic_vector(3 downto 0);  -- ALU operation select
+           shift  : out std_logic
+    );
+end component;
+
+component mips_alu is
+    generic (
+        DATA_SIZE : integer := 32
+    );
+    Port (
+        src_a      : in  std_logic_vector((DATA_SIZE - 1) downto 0);
+        src_b      : in  std_logic_vector((DATA_SIZE - 1) downto 0);
+        alu_op     : in  std_logic_vector(3 downto 0);
+        shift      : in  std_logic;
+        shfunct    : in  std_logic;
+        shamnt     : in  std_logic_vector(4 downto 0);
+        result     : out std_logic_vector((DATA_SIZE - 1) downto 0);
+        zero       : out std_logic;
+        carry_out  : out std_logic
+    );
 end component;
 
 -- pipeline stuff
@@ -294,6 +305,8 @@ component IFID_reg is
         rt          : out std_logic_vector((REG_SIZE - 1) downto 0);
         rd          : out std_logic_vector((REG_SIZE - 1) downto 0);
         imm16b      : out std_logic_vector(15 downto 0);
+        shamnt      : out std_logic_vector(4 downto 0);
+        shfunct     : out std_logic;
         pc_out      : out std_logic_vector((PC_SIZE - 1) downto 0)
     );
 end component;
@@ -318,6 +331,9 @@ component IDEX_reg is
         clk                 : in std_logic;
         flush               : in std_logic;
         stall               : in std_logic;
+        opcode              : in std_logic_vector(5 downto 0);
+        shamnt              : in std_logic_vector(4 downto 0);
+        shfunct             : in std_logic;
         read_out_1          : out std_logic_vector((DATA_SIZE - 1) downto 0);
         read_out_2          : out std_logic_vector((DATA_SIZE - 1) downto 0);
         imm32b              : out std_logic_vector((DATA_SIZE - 1) downto 0);
@@ -329,7 +345,11 @@ component IDEX_reg is
         mem_ctrl_out        : out std_logic;
         wb_ctrl_out         : out std_logic_vector(3 downto 0);
         alu_src             : out std_logic;
-        pc_add              : out std_logic 
+        pc_add              : out std_logic;
+        opcode_out          : out std_logic_vector(5 downto 0);
+        shamnt_out          : out std_logic_vector(4 downto 0);
+        shfunct_out         : out std_logic
+
     );
 end component;
 
@@ -456,8 +476,19 @@ signal sig_wb_alu_or_mem            : std_logic_vector((DATA_SIZE - 1) downto 0)
 
 signal sig_wb_sw_ext                : std_logic_vector((DATA_SIZE - 1) downto 0);
 
+
+signal sig_alu_op                   : std_logic_vector(3 downto 0);
+signal sig_alu_zero                 : std_logic;
+signal sig_ex_opcode                : std_logic_vector(5 downto 0);
 signal sig_buttons                  : std_logic_vector(3 downto 0);
 signal sig_reg_out                  : std_Logic_vector((DATA_SIZE - 1) downto 0);
+
+signal sig_id_shamnt                : std_logic_vector(4 downto 0);
+signal sig_id_shfunct               : std_logic;
+
+signal sig_ex_shamnt                : std_logic_vector(4 downto 0);
+signal sig_ex_shfunct               : std_logic;
+signal sig_ex_shift                 : std_logic;
 
 begin
 
@@ -537,6 +568,8 @@ begin
         rt          => sig_id_rt,
         rd          => sig_id_rd,
         imm16b       => sig_id_imm16b,
+        shamnt      => sig_id_shamnt,
+        shfunct     => sig_id_shfunct,
         pc_out      => sig_id_pc_out
     );
     
@@ -604,6 +637,9 @@ begin
         clk                 => clk,
         flush               => sig_if_flush,
         stall               => sig_if_stall,
+        opcode              => sig_id_opcode,
+        shamnt              => sig_id_shamnt,
+        shfunct             => sig_id_shfunct,
         read_out_1          => sig_ex_read_out_1,
         read_out_2          => sig_ex_read_out_2,
         imm32b              => sig_ex_imm32b,
@@ -615,13 +651,16 @@ begin
         mem_ctrl_out        => sig_ex_mem_ctrl_out,
         wb_ctrl_out         => sig_ex_wb_ctrl_out,
         alu_src             => sig_ex_alu_src,
-        pc_add              => sig_ex_pc_add
+        pc_add              => sig_ex_pc_add,
+        opcode_out          => sig_ex_opcode,
+        shamnt_out          => sig_ex_shamnt,
+        shfunct_out         => sig_ex_shfunct
     );
                
     -- ======================================================================================
     --                                 EX STAGE
     -- ======================================================================================
-    
+
     fw_unit : forwarding_unit
     port map(
         -- control
@@ -650,11 +689,29 @@ begin
                data_b     => sig_ex_imm32b,
                data_out   => sig_ex_alu_src_b );
 
-    alu : adder_32b 
-    port map ( src_a     => sig_ex_read_data_1,
-               src_b     => sig_ex_alu_src_b,
-               sum       => sig_ex_alu_result,
-               equal     => sig_alu_equal,
+    -- alu : adder_32b 
+    -- port map ( src_a     => sig_ex_read_data_1,
+    --            src_b     => sig_ex_alu_src_b,
+    --            sum       => sig_ex_alu_result,
+    --            equal     => sig_alu_equal,
+    --            carry_out => sig_ex_alu_carry_out );
+
+    alu_ctl: alu_control
+    port map ( opcode => sig_ex_opcode,
+                funct => (OTHERS => '0'), -- hardcoded not used
+                alu_op => sig_alu_op,
+                shift => sig_ex_shift
+                );
+
+    alu: mips_alu 
+    port map ( src_a => sig_ex_read_data_1,
+               src_b => sig_ex_alu_src_b,
+               alu_op => sig_alu_op,
+               shift    => sig_ex_shift,
+               shfunct  => sig_ex_shfunct,
+               shamnt   => sig_ex_shamnt,
+               result => sig_ex_alu_result,
+               zero => sig_alu_zero,
                carry_out => sig_ex_alu_carry_out );
                
     ex_mem_reg : EXMEM_reg

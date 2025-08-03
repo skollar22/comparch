@@ -51,6 +51,9 @@ entity IDEX_reg is
         clk                 : in std_logic;
         flush               : in std_logic;
         stall               : in std_logic;
+        opcode              : in std_logic_vector(5 downto 0);
+        shamnt              : in std_logic_vector(4 downto 0);
+        shfunct             : in std_logic;
         read_out_1          : out std_logic_vector((DATA_SIZE - 1) downto 0);
         read_out_2          : out std_logic_vector((DATA_SIZE - 1) downto 0);
         imm32b              : out std_logic_vector((DATA_SIZE - 1) downto 0);
@@ -62,7 +65,10 @@ entity IDEX_reg is
         mem_ctrl_out        : out std_logic;
         wb_ctrl_out         : out std_logic_vector(3 downto 0);
         alu_src             : out std_logic;
-        pc_add              : out std_logic 
+        pc_add              : out std_logic;
+        opcode_out          : out std_logic_vector(5 downto 0);
+        shamnt_out          : out std_logic_vector(4 downto 0);
+        shfunct_out         : out std_logic
     );
 end IDEX_reg;
 
@@ -79,6 +85,8 @@ variable var_rr2            : std_logic_vector((REG_SIZE - 1) downto 0);
 variable var_wr             : std_logic_vector((REG_SIZE - 1) downto 0);
 variable var_pc             : std_logic_vector((PC_SIZE - 1) downto 0);
 variable var_ctrl           : std_logic_vector(6 downto 0);
+variable var_opcode         : std_logic_vector(5 downto 0);
+variable var_shamnt         : std_logic_vector(5 downto 0);
 begin
     if rising_edge (clk) then
         if (flush = '1') or (stall = '1') then
@@ -92,6 +100,8 @@ begin
             var_wr              := write_reg;
             var_pc              := next_pc;
             var_ctrl            := ex_ctrl & mem_ctrl & wb_ctrl;
+            var_opcode          := opcode;
+            var_shamnt          := shamnt & shfunct;
         end if;
     end if;
     
@@ -107,7 +117,10 @@ begin
     wb_ctrl_out         <= var_ctrl(3 downto 0);
     alu_src             <= var_ctrl(6);
     pc_add              <= var_ctrl(5);
-    
+    opcode_out          <= var_opcode;
+    shamnt_out          <= var_shamnt(5 downto 1);
+    shfunct_out         <= var_shamnt(0);
+
 end process;
 
 end Behavioral;
