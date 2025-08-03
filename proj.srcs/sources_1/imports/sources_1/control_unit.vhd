@@ -60,6 +60,7 @@ constant OP_STORE : std_logic_vector(5 downto 0) := "010000";
 constant OP_ADD   : std_logic_vector(5 downto 0) := "100000";
 constant OP_BEQ   : std_logic_vector(5 downto 0) := "000100";
 constant OP_DISP  : std_logic_vector(5 downto 0) := "011000";
+constant OP_DISPR : std_logic_vector(5 downto 0) := "011100";
 constant OP_SWLD  : std_logic_vector(5 downto 0) := "110000";
 
 begin
@@ -74,7 +75,8 @@ begin
     
     alu_src    <= '1' when (opcode = OP_LOAD 
                            or opcode = OP_STORE
-                           or opcode = OP_DISP) else
+                           or opcode = OP_DISP
+                           or opcode = OP_DISPR) else
                   '0';
                  
     mem_write  <= '1' when opcode = OP_STORE else
@@ -84,7 +86,8 @@ begin
                            or opcode = OP_DISP) else
                   '0';
 
-    led_write  <= '1' when opcode = OP_DISP else
+    led_write  <= '1' when (opcode = OP_DISP
+                           or opcode = OP_DISPR) else
                   '0';
                   
     pc_add     <= '1' when opcode = OP_BEQ else
