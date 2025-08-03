@@ -55,10 +55,16 @@ entity single_cycle_core is
         REG_SIZE : integer := 5
     );
     port ( btnL   : in std_logic;
-           clk    : in  std_logic;
-           btnC    : in std_logic;
+           btnR   : in std_logic;
+           btnU   : in std_logic;
+           btnD   : in std_logic;
+           clk    : in std_logic;
+           btnC   : in std_logic;
            sw     : in std_logic_vector (15 downto 0);
-           led    : out std_logic_vector (15 downto 0) );
+           led    : out std_logic_vector (15 downto 0);
+           an     : out std_logic_vector (3 downto 0);
+           seg    : out std_logic_vector (6 downto 0);
+           dp     : out std_logic );
 end single_cycle_core;
 
 architecture structural of single_cycle_core is
@@ -141,8 +147,10 @@ component register_file is
            write_enable    : in  std_logic;
            write_register  : in  std_logic_vector((REG_SIZE - 1) downto 0);
            write_data      : in  std_logic_vector((DATA_SIZE - 1) downto 0);
+           buttons         : in  std_logic_vector(3 downto 0);
            read_data_a     : out std_logic_vector((DATA_SIZE - 1) downto 0);
-           read_data_b     : out std_logic_vector((DATA_SIZE - 1) downto 0) );
+           read_data_b     : out std_logic_vector((DATA_SIZE - 1) downto 0);
+           reg_out         : out std_logic_vector((DATA_SIZE - 1) downto 0) );
 end component;
 
 component single_register is
@@ -273,6 +281,20 @@ component forwarding_unit is
         -- outputs
         reg_1_out       : out std_logic_vector((DATA_SIZE - 1) downto 0);
         reg_2_out       : out std_logic_vector((DATA_SIZE - 1) downto 0)
+    );
+end component;
+
+component reg_to_7seg is
+    generic (
+        DATA_SIZE : integer := 32;
+        REG_SIZE : integer := 5
+    );
+    port (
+           clk       : in std_logic;
+           reg_value : in std_logic_vector((DATA_SIZE - 1) downto 0);
+           dp        : out std_logic;
+           an        : out std_logic_vector(3 downto 0);
+           seg       : out std_logic_vector(6 downto 0)
     );
 end component;
 
@@ -459,14 +481,23 @@ signal sig_wb_alu_or_mem            : std_logic_vector((DATA_SIZE - 1) downto 0)
 signal sig_wb_sw_ext                : std_logic_vector((DATA_SIZE - 1) downto 0);
 
 
-signal sig_alu_op : std_logic_vector(3 downto 0);
-signal sig_alu_zero : std_logic;
-signal sig_ex_opcode : std_logic_vector(5 downto 0);
+signal sig_alu_op                   : std_logic_vector(3 downto 0);
+signal sig_alu_zero                 : std_logic;
+signal sig_ex_opcode                : std_logic_vector(5 downto 0);
+signal sig_buttons                  : std_logic_vector(3 downto 0);
+signal sig_reg_out                  : std_Logic_vector((DATA_SIZE - 1) downto 0);
 
 begin
 
     sig_one_8b <= "00000001";
+    sig_buttons <= btnL & btnR & btnU & btnD;
     
+    seven_seg : reg_to_7seg
+    port map ( clk       => clk,
+               reg_value => sig_reg_out,
+               dp        => dp,
+               an        => an,
+               seg       => seg );
     
     -- =========================================================================================
     --                                     IF STAGE
@@ -577,8 +608,10 @@ begin
                write_enable    => sig_wb_reg_write,
                write_register  => sig_wb_write_reg,
                write_data      => sig_wb_write_data,
+               buttons         => sig_buttons,
                read_data_a     => sig_id_read_data_a,
-               read_data_b     => sig_id_read_data_b );
+               read_data_b     => sig_id_read_data_b,
+               reg_out         => sig_reg_out );
     
     -- because vhdl dumb
     sig_id_ex_ctrl <= sig_id_alu_src & sig_id_pc_add;
