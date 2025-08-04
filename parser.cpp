@@ -279,7 +279,6 @@ std::string handleLoadStore(const char *opcode, std::string operands) {
 
     // get register 2
     std::string reg2 = operands.substr(0, operands.find(delimiter));
-    operands.erase(0, operands.find(delimiter) + delimiter.length());
 
     // remove dollar sign
     reg2.erase(0, 1);
@@ -288,7 +287,8 @@ std::string handleLoadStore(const char *opcode, std::string operands) {
 
     // get imm
     std::string bracket("(");
-    std::string imm = operands.substr(0, operands.find(bracket));
+    std::string rbracket("(");
+    std::string imm = operands.substr(operands.find(bracket), operands.find(rbracket));
 
     // remove bracket
     imm.erase(0, 1);
