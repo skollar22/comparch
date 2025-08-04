@@ -829,7 +829,7 @@ begin
         input_prev <= noisy_sig;
         if noisy_sig /= input_prev then
             synch_count <= (others => '0');
-        elsif synch_count /= x"100000" then
+        else
             synch_count <= synch_count + 1;
         end if;
         if (synch_count = x"100000" or synch_count = x"100001") and noisy_sig = '1' then
