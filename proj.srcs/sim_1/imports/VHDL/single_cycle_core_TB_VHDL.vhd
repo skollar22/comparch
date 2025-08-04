@@ -95,7 +95,7 @@ begin
             read(L, tally);
             read(L, tag);
             
-            -- Construct switches: [2b electoral][2b candidate][8b tally][4b tag=0000]
+            -- Construct switches: [2b electoral][2b candidate][8b tally][4b tag]
             sw_val := std_logic_vector(to_unsigned(electoral, 2)) &
                     std_logic_vector(to_unsigned(candidate, 2)) &
                     std_logic_vector(to_unsigned(tally, 8)) &
@@ -120,7 +120,7 @@ begin
             wait for 2 * c_CLOCK_PERIOD;
             unhalt <= '0';
             
-            wait for 20 * c_CLOCK_PERIOD; -- allow processing time
+            wait for 100 * c_CLOCK_PERIOD; -- allow processing time
         end loop;
         
         -- Close the file
