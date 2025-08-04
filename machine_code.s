@@ -70,7 +70,7 @@ dispr $9
 
 # Check if computed tag is equal to sent tag
 beq $6, $7, 1
-beq $0, $0, 11
+beq $0, $0, 13
 
 # If computed tag = sent tag, then add tally to candidate ID's count
 # First, extract tally and candidate ID from record

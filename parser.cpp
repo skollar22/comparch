@@ -64,7 +64,7 @@ std::string handleIType(const char *opcode, std::string operands) {
     // remove dollar sign
     reg2.erase(0, 1);
 
-    std::string rs = toBinary(std::stoi(reg));
+    std::string rs = toBinary(std::stoi(reg2));
 
     // get imm
     std::string immediate = toBinary(std::stoi(operands), 16);
