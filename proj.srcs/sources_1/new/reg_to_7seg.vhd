@@ -57,7 +57,7 @@ begin
                 digit <= (value / 10) mod 10;
             when "10" =>
                 digit <= (value / 100) mod 10;
-            when "11" =>
+            when others =>
                 digit <= (value / 1000) mod 10;
         end case;
     end process;
