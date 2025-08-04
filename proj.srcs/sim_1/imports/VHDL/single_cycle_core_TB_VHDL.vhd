@@ -16,6 +16,7 @@ architecture behave of Single_cycle_core_TB_VHDL is
 
  signal r_CLOCK     : std_logic := '0';
  signal r_reset    : std_logic := '0';
+ signal R, U, D, dp : std_logic := '0';
  signal r_ext      : std_logic := '0';
  signal led_array   : std_logic_vector (15 downto 0) := (others => '0');
  signal switches     : std_logic_vector(15 downto 0) := (others => '0');
@@ -25,12 +26,18 @@ architecture behave of Single_cycle_core_TB_VHDL is
 
 -- Component declaration for the Unit Under Test (UUT)
 component single_cycle_core is
-    port ( btnL  : in  std_logic;
-           clk    : in  std_logic;
-           btnC    : in  std_logic;
-           sw     : in std_logic_vector(15 downto 0);
-           led    : out std_logic_vector (15 downto 0) 
-       );
+    port ( btnL   : in std_logic;
+           btnR   : in std_logic;
+           btnU   : in std_logic;
+           btnD   : in std_logic;
+           clk    : in std_logic;
+           btnC   : in std_logic;
+           sw     : in std_logic_vector (15 downto 0);
+           led    : out std_logic_vector (15 downto 0);
+           an     : out std_logic_vector (3 downto 0);
+           seg    : out std_logic_vector (6 downto 0);
+           dp     : out std_logic 
+     );
       end component ;
       
       
@@ -40,10 +47,16 @@ component single_cycle_core is
         UUT : single_cycle_core
           port map (
             btnL    => r_reset,
+            btnR    => R,
+            btnU    => U,
+            btnD    => D,
             clk     => r_CLOCK,
             btnC     => r_ext,
             sw      => switches,
-            led     => led_array
+            led     => led_array,
+            an      => anodes,
+            seg     => segments,
+            dp      => dp
             );
        
         p_CLK_GEN : process is
