@@ -79,7 +79,8 @@ begin
                             or opcode = OP_OR
                             or opcode = OP_XOR
                             or opcode = OP_NOT
-                            or opcode = OP_SLT)
+                            or opcode = OP_SLT
+                            or opcode = OP_SWLD)
                             else
                   '0';
 

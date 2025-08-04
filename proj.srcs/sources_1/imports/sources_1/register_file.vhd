@@ -97,10 +97,10 @@ begin
         --sig_regfile(3) <= "11111111111111111111111111111111";
         if rising_edge(clk) then
             case buttons is
-                when "0010" => reg_out <= sig_regfile(0);
-                when "0100" => reg_out <= sig_regfile(1);
-                when "0001" => reg_out <= sig_regfile(2);
-                when "1000" => reg_out <= sig_regfile(3);
+                when "0010" => reg_out <= sig_regfile(1);
+                when "0100" => reg_out <= sig_regfile(2);
+                when "0001" => reg_out <= sig_regfile(3);
+                when "1000" => reg_out <= sig_regfile(4);
                 when others => null;
             end case;
         end if;
