@@ -71,6 +71,7 @@ begin
         variable electoral : integer;
         variable candidate : integer;
         variable tally     : integer;
+        variable tag       : integer;
         variable sw_val    : std_logic_vector(15 downto 0);
     begin
         -- Open the file
@@ -92,12 +93,13 @@ begin
             read(L, electoral);
             read(L, candidate);
             read(L, tally);
+            read(L, tag);
             
             -- Construct switches: [2b electoral][2b candidate][8b tally][4b tag=0000]
             sw_val := std_logic_vector(to_unsigned(electoral, 2)) &
                     std_logic_vector(to_unsigned(candidate, 2)) &
                     std_logic_vector(to_unsigned(tally, 8)) &
-                    "0000";
+                    std_logic_vector(to_unsigned(tag, 4));
             
             switches <= sw_val;
             
@@ -108,6 +110,8 @@ begin
             write(P, candidate);
             write(P, string'(" Tally="));
             write(P, tally);
+            write(P, string'(" Tag="));
+            write(P, tag);
             write(P, string'(" Switches="));
             write(P, sw_val);
             writeline(output, P);
