@@ -56,33 +56,33 @@ begin
     variable tally     : integer;
 
     variable sw_val : std_logic_vector(15 downto 0);
-  begin
-    r_reset <= '0';
-    wait for 2 * c_CLOCK_PERIOD;
-    r_reset <= '1';
-    wait for 2 * c_CLOCK_PERIOD;
-    r_reset <= '0';
-
-    -- read each line of the file
-    while not endfile(input_file) loop
-      readline(input_file, L);
-      read(L, electoral);
-      read(L, candidate);
-      read(L, tally);
-
-      -- Construct switch input
-      sw_val := std_logic_vector(to_unsigned(electoral, 2)) &  -- bits 15 downto 14
-                std_logic_vector(to_unsigned(candidate, 2)) &  -- bits 13 downto 12
-                std_logic_vector(to_unsigned(tally, 8)) &      -- bits 11 downto 4
-                "0000";                                        -- bits 3 downto 0 (tag)
-
-      switches <= sw_val;
-      unhalt_rd <= '1';
-      wait for 2 * c_CLOCK_PERIOD;
-    end loop;
-
-    wait for 1 sec;
-    assert false report "Simulation ended" severity failure;
-  end process;
+    begin
+        r_reset <= '0';
+        wait for 2 * c_CLOCK_PERIOD;
+        r_reset <= '1';
+        wait for 2 * c_CLOCK_PERIOD;
+        r_reset <= '0';
+        
+        -- read each line of the file
+        while not endfile(input_file) loop
+            readline(input_file, L);
+            read(L, electoral);
+            read(L, candidate);
+            read(L, tally);
+            
+            -- Construct switch input
+            sw_val := std_logic_vector(to_unsigned(electoral, 2)) &  -- bits 15 downto 14
+                    std_logic_vector(to_unsigned(candidate, 2)) &  -- bits 13 downto 12
+                    std_logic_vector(to_unsigned(tally, 8)) &      -- bits 11 downto 4
+                    "0000";                                        -- bits 3 downto 0 (tag)
+            
+            switches <= sw_val;
+            unhalt_rd <= '1';
+            wait for 2 * c_CLOCK_PERIOD;
+        end loop;
+        
+        wait for 1 sec;
+        assert false report "Simulation ended" severity failure;
+    end process;
 
 end behave;
