@@ -821,7 +821,7 @@ end debounce;
 
 architecture behavioural of debounce is
     signal input_prev : std_logic;
-    signal synch_count : std_logic_vector(20 downto 0);
+    signal synch_count : std_logic_vector(40 downto 0);
 begin
     synchronize: process
     begin
