@@ -69,6 +69,12 @@ end single_cycle_core;
 
 architecture structural of single_cycle_core is
 
+component Debounce is    -- debounce code - instantiate when implementing on the board;
+    port( clk : in std_logic;    -- do not instantiate when simulating your FSM
+          noisy_sig : in std_logic;
+          clean_sig : out std_logic);
+end component;
+
 component program_counter is
     generic (
             PC_SIZE : integer := 8 );
@@ -490,10 +496,15 @@ signal sig_ex_shamnt                : std_logic_vector(4 downto 0);
 signal sig_ex_shfunct               : std_logic;
 signal sig_ex_shift                 : std_logic;
 
+signal sig_debounce_btnC            : std_logic;
+
 begin
 
     sig_one_8b <= "00000001";
     sig_buttons <= btnL & btnR & btnU & btnD;
+    
+    DebounceBtnC: Debounce port map (clk, btnC, sig_debounce_btnC); -- when doing board impl
+    -- sig_debounce_btnC <= btnC;                                      -- when doing simulation
     
     seven_seg : reg_to_7seg
     port map ( clk       => clk,
@@ -553,7 +564,7 @@ begin
                instr        => sig_if_insn,
                flush        => sig_if_flush,
                stall        => sig_if_stall,
-               ext_resume   => btnC,
+               ext_resume   => sig_debounce_btnC,
                hlt          => sig_if_hlt);
     
     if_id_reg : IFID_reg
@@ -797,3 +808,34 @@ begin
     
     led <= sig_wb_dispr_out;
 end structural;
+
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+
+entity debounce is
+    port( clk : in std_logic;
+          noisy_sig : in std_logic;
+          clean_sig : out std_logic);
+end debounce;
+
+architecture behavioural of debounce is
+    signal input_prev : std_logic;
+    signal synch_count : std_logic_vector(20 downto 0);
+begin
+    synchronize: process
+    begin
+        wait until clk'event and clk = '1';
+        input_prev <= noisy_sig;
+        if noisy_sig /= input_prev then
+            synch_count <= (others => '0');
+        elsif synch_count /= x"100000" then
+            synch_count <= synch_count + 1;
+        end if;
+        if (synch_count = x"100000" or synch_count = x"100001") and noisy_sig = '1' then
+            clean_sig <= '1';
+        else
+            clean_sig <= '0';
+        end if;
+    end process;
+end behavioural;
