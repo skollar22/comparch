@@ -12,7 +12,7 @@
 hlt
 swl $5
 
-# Block partition (tag size = 4)
+# Block partition (tag size = 5)
 lui $6, 0
 ori $6, $0, 96              # imm = 0x60
 and $6, $5, $6, lsr 2       # <- block 0
