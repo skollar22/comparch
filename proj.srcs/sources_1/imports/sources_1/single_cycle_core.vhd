@@ -526,7 +526,7 @@ begin
     -- =========================================================================================
 
     pc : program_counter
-    port map ( reset    => '0',
+    port map ( reset    => btnL,
                clk      => clk,
                addr_in  => sig_pc_next_actual,
                addr_out => sig_if_curr_pc ); 
@@ -538,7 +538,7 @@ begin
                carry_out => sig_if_pc_carry_out );
     
     insn_mem : instruction_memory 
-    port map ( reset    => '0',
+    port map ( reset    => btnL,
                clk      => clk,
                hlt      => sig_if_hlt,
                addr_in  => sig_if_curr_pc,
@@ -573,7 +573,7 @@ begin
     );
     
     hlt_unit : halting_unit
-    port map ( reset        => '0',
+    port map ( reset        => btnL,
                clk          => clk,
                instr        => sig_if_insn,
                flush        => sig_if_flush,
@@ -631,7 +631,7 @@ begin
                data_out   => sig_id_write_reg );
 
     reg_file : register_file 
-    port map ( reset           => '0', 
+    port map ( reset           => btnL, 
                clk             => clk,
                read_register_a => sig_id_rs,
                read_register_b => sig_id_rt,
@@ -757,7 +757,7 @@ begin
     -- ========================================================================================
 
     data_mem : data_memory 
-    port map ( reset        => '0',
+    port map ( reset        => btnL,
                clk          => clk,
                write_enable => sig_mem_mem_write,
                write_data   => sig_mem_read_data_out_2,
@@ -797,7 +797,7 @@ begin
     port map ( data_in      => sig_wb_alu_or_mem(15 downto 0),
                clk          => clk,
                write_enable => sig_wb_led_write,
-               reset        => '0',
+               reset        => btnL,
                data_out     => sig_wb_dispr_out );
     
     sw_ext : sign_extend
