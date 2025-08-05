@@ -25,7 +25,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity sign_extend is
     generic (
         DATA_SIZE : integer := 32;
-        IMM_SIZE : integer := 32
+        IMM_SIZE : integer := 16
     );
     port ( data_in  : in  std_logic_vector((IMM_SIZE - 1) downto 0);
            data_out : out std_logic_vector((DATA_SIZE - 1) downto 0) );
@@ -41,9 +41,9 @@ begin
 
         -- the extended bits take on the value of the most significant
         -- bit (MSB) of data_in
-        -- for i in (DATA_SIZE - 1) downto IMM_SIZE loop
-        --     data_out(i) <= data_in((IMM_SIZE - 1));
-        -- end loop;
+         for i in (DATA_SIZE - 1) downto IMM_SIZE loop
+             data_out(i) <= '0';
+         end loop;
 
     end process;
     

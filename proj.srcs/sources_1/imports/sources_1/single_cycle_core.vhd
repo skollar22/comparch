@@ -800,13 +800,15 @@ begin
                reset        => btnL,
                data_out     => sig_wb_dispr_out );
     
-    sw_ext : sign_extend
-    generic map (
-                DATA_SIZE => DATA_SIZE,
-                IMM_SIZE => DATA_SIZE
-                )
-    port map ( data_in => swi,
-               data_out => sig_wb_sw_ext );
+--    sw_ext : sign_extend
+--    generic map (
+--                DATA_SIZE => DATA_SIZE,
+--                IMM_SIZE => DATA_SIZE
+--                )
+--    port map ( data_in => swi,
+--               data_out => sig_wb_sw_ext );
+
+    sig_wb_sw_ext <= swi;
     
     
     mux_final_data_out : mux_2to1
