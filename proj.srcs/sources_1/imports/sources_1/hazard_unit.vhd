@@ -65,7 +65,7 @@ begin
 
 process(pc_add, data_1, data_2, next_pc, 
         branch_pc, stall_pc, imm8b, hlt, id_mem_read, 
-        id_reg_rt, if_reg_rs, id_reg_rt)
+        id_reg_rt, if_reg_rs, id_reg_rt, ex_mem_read, ex_reg_rt)
 variable temp_pc    : std_logic_vector(PC_SIZE downto 0);
 begin
     
@@ -82,12 +82,26 @@ begin
     else
         if_flush <= '0';
         
-        if ((id_mem_read = '1')
-            and ((id_reg_rt = if_reg_rs)
-            or (id_reg_rt = if_reg_rt)))
-            or ((ex_mem_read = '1')
-            and ((ex_reg_rt = if_reg_rs)
-            or (ex_reg_rt = if_reg_rt)))
+        if (id_mem_read = '0') and (ex_mem_read = '0') then
+            if_stall <= '0';
+            new_pc <= next_pc;
+        elsif  (
+            (
+            (id_mem_read = '1')
+            and (
+                (id_reg_rt = if_reg_rs)
+                or (id_reg_rt = if_reg_rt)
+                )
+            )
+            or 
+            (
+            (ex_mem_read = '1')
+            and (
+                (ex_reg_rt = if_reg_rs)
+                or (ex_reg_rt = if_reg_rt)
+                )
+            )
+            )
             then
             
             if_stall <= '1';

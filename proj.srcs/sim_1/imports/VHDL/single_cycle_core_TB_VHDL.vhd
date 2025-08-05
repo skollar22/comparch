@@ -120,7 +120,7 @@ begin
             wait for 2 * c_CLOCK_PERIOD;
             unhalt <= '0';
             
-            wait for 100 * c_CLOCK_PERIOD; -- allow processing time
+            wait for 120 * c_CLOCK_PERIOD; -- allow processing time
         end loop;
         
         -- Close the file
