@@ -231,6 +231,8 @@ component hazard_unit is
         imm8b           : in std_logic_vector((PC_SIZE - 1) downto 0);
         id_mem_read     : in std_logic;
         id_reg_rt       : in std_logic_vector((REG_SIZE - 1) downto 0);
+        ex_mem_read     : in std_logic;
+        ex_reg_rt       : in std_logic_vector((REG_SIZE - 1) downto 0);
         if_reg_rs       : in std_logic_vector((REG_SIZE - 1) downto 0);
         if_reg_rt       : in std_logic_vector((REG_SIZE - 1) downto 0);
         
@@ -267,12 +269,14 @@ component forwarding_unit is
         id_reg_2        : in std_logic_vector((REG_SIZE - 1) downto 0);
         ex_write_reg    : in std_logic_vector((REG_SIZE - 1) downto 0);
         mem_write_reg   : in std_logic_vector((REG_SIZE - 1) downto 0);
+        wb_write_reg    : in std_logic_vector((REG_SIZE - 1) downto 0);
         
         -- data
         id_reg_1_data   : in std_logic_vector((DATA_SIZE - 1) downto 0);
         id_reg_2_data   : in std_logic_vector((DATA_SIZE - 1) downto 0);
         ex_wr_data      : in std_logic_vector((DATA_SIZE - 1) downto 0);
         mem_wr_data     : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        wb_wr_data      : in std_logic_vector((DATA_SIZE - 1) downto 0);
         
         -- outputs
         reg_1_out       : out std_logic_vector((DATA_SIZE - 1) downto 0);
@@ -455,8 +459,6 @@ signal sig_ex_wb_ctrl_out         : std_logic_vector(3 downto 0);
 signal sig_ex_alu_src             : std_logic;
 signal sig_ex_pc_add              : std_logic;
 
-signal sig_ex_read_data_1             : std_logic_vector((DATA_SIZE - 1) downto 0);
-signal sig_ex_read_data_2             : std_logic_vector((DATA_SIZE - 1) downto 0);
 
 signal sig_mem_alu_res_out         : std_logic_vector((DATA_SIZE - 1) downto 0);
 signal sig_mem_read_data_out_2     : std_logic_vector((DATA_SIZE - 1) downto 0);
@@ -498,13 +500,19 @@ signal sig_ex_shift                 : std_logic;
 
 signal sig_debounce_btnC            : std_logic;
 
+signal sig_id_read_data_fw_a        : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_id_read_data_fw_b        : std_logic_vector((DATA_SIZE - 1) downto 0);
+
+signal sig_if_haz_ctrl_ex           : std_logic;
+signal sig_if_haz_ctrl_mem          : std_logic;
+
 begin
 
     sig_one_8b <= "00000001";
     sig_buttons <= btnL & btnR & btnU & btnD;
     
-    DebounceBtnC: Debounce port map (clk, btnC, sig_debounce_btnC); -- when doing board impl
-    -- sig_debounce_btnC <= btnC;                                      -- when doing simulation
+--    DebounceBtnC: Debounce port map (clk, btnC, sig_debounce_btnC); -- when doing board impl
+     sig_debounce_btnC <= btnC;                                      -- when doing simulation
     
     seven_seg : reg_to_7seg
     port map ( clk       => clk,
@@ -536,19 +544,25 @@ begin
                addr_in  => sig_if_curr_pc,
                insn_out => sig_if_insn );
                
+    -- here
+    sig_if_haz_ctrl_ex <= sig_ex_wb_ctrl_out(2) or sig_ex_wb_ctrl_out(1);
+    sig_if_haz_ctrl_mem <= sig_mem_wb_ctrl_out(2) or sig_mem_wb_ctrl_out(1);
+               
     haz_unit : hazard_unit
     port map (
         -- in
         pc_add          => sig_ex_pc_add,
-        data_1          => sig_ex_read_data_1,
-        data_2          => sig_ex_read_data_2,
+        data_1          => sig_ex_read_out_1,
+        data_2          => sig_ex_read_out_2,
         branch_pc       => sig_ex_pc_out,  -- sig_ex_next_pc / flush pc
         stall_pc        => sig_if_curr_pc,  -- pc remains the same as currently is, ie sig_if_curr_pc
         next_pc         => sig_if_next_pc,  -- normal behaviour, ie sig_if_next_pc
         hlt             => sig_if_hlt,
         imm8b           => sig_ex_imm8b,
-        id_mem_read     => sig_ex_wb_ctrl_out(2),
+        id_mem_read     => sig_if_haz_ctrl_ex,
         id_reg_rt       => sig_ex_rr_out_2,
+        ex_mem_read     => sig_if_haz_ctrl_mem,
+        ex_reg_rt       => sig_mem_write_reg_out,
         if_reg_rs       => sig_id_rs,
         if_reg_rt       => sig_id_rt,
         
@@ -633,10 +647,31 @@ begin
     sig_id_ex_ctrl <= sig_id_alu_src & sig_id_pc_add;
     sig_id_wb_ctrl <= sig_id_reg_write & sig_id_mem_to_reg & sig_id_switch_in & sig_id_led_write;
     
+    fw_unit : forwarding_unit
+    port map(
+        -- control
+        id_reg_1        => sig_id_rs,
+        id_reg_2        => sig_id_rt,
+        ex_write_reg    => sig_ex_wr_out,
+        mem_write_reg   => sig_mem_write_reg_out,
+        wb_write_reg    => sig_wb_write_reg,
+        
+        -- data
+        id_reg_1_data   => sig_id_read_data_a,
+        id_reg_2_data   => sig_id_read_data_b,
+        ex_wr_data      => sig_ex_alu_result,
+        mem_wr_data     => sig_mem_alu_res_out,
+        wb_wr_data      => sig_wb_write_data,
+        
+        -- outputs
+        reg_1_out       => sig_id_read_data_fw_a,
+        reg_2_out       => sig_id_read_data_fw_b
+    );
+    
     id_ex_reg : IDEX_reg
     port map (
-        read_data_1         => sig_id_read_data_a,
-        read_data_2         => sig_id_read_data_b,
+        read_data_1         => sig_id_read_data_fw_a,
+        read_data_2         => sig_id_read_data_fw_b,
         imm_ext32b          => sig_id_imm32b,
         read_reg_1          => sig_id_rs,
         read_reg_2          => sig_id_rt,
@@ -672,40 +707,17 @@ begin
     --                                 EX STAGE
     -- ======================================================================================
 
-    fw_unit : forwarding_unit
-    port map(
-        -- control
-        id_reg_1        => sig_ex_rr_out_1,
-        id_reg_2        => sig_ex_rr_out_2,
-        ex_write_reg    => sig_mem_write_reg_out,
-        mem_write_reg   => sig_wb_write_reg,
-        
-        -- data
-        id_reg_1_data   => sig_ex_read_out_1,
-        id_reg_2_data   => sig_ex_read_out_2,
-        ex_wr_data      => sig_mem_alu_res_out,
-        mem_wr_data     => sig_wb_mem_result_out,
-        
-        -- outputs
-        reg_1_out       => sig_ex_read_data_1,
-        reg_2_out       => sig_ex_read_data_2
-    );
+    
     
     mux_alu_src : mux_2to1
     generic map (
                 MUX_SIZE => DATA_SIZE
                 )
     port map ( mux_select => sig_ex_alu_src,
-               data_a     => sig_ex_read_data_2,
+               data_a     => sig_ex_read_out_2,
                data_b     => sig_ex_imm32b,
                data_out   => sig_ex_alu_src_b );
 
-    -- alu : adder_32b 
-    -- port map ( src_a     => sig_ex_read_data_1,
-    --            src_b     => sig_ex_alu_src_b,
-    --            sum       => sig_ex_alu_result,
-    --            equal     => sig_alu_equal,
-    --            carry_out => sig_ex_alu_carry_out );
 
     alu_ctl: alu_control
     port map ( opcode => sig_ex_opcode,
@@ -715,7 +727,7 @@ begin
                 );
 
     alu: mips_alu 
-    port map ( src_a => sig_ex_read_data_1,
+    port map ( src_a => sig_ex_read_out_1,
                src_b => sig_ex_alu_src_b,
                alu_op => sig_alu_op,
                shift    => sig_ex_shift,
@@ -728,7 +740,7 @@ begin
     ex_mem_reg : EXMEM_reg
     port map (
         alu_result          => sig_ex_alu_result,
-        read_data_2         => sig_ex_read_data_2,
+        read_data_2         => sig_ex_read_out_2,
         write_reg           => sig_ex_wr_out,
         mem_ctrl            => sig_ex_mem_ctrl_out,
         wb_ctrl             => sig_ex_wb_ctrl_out,

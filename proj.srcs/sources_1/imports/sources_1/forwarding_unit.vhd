@@ -42,12 +42,14 @@ entity forwarding_unit is
         id_reg_2        : in std_logic_vector((REG_SIZE - 1) downto 0);
         ex_write_reg    : in std_logic_vector((REG_SIZE - 1) downto 0);
         mem_write_reg   : in std_logic_vector((REG_SIZE - 1) downto 0);
+        wb_write_reg    : in std_logic_vector((REG_SIZE - 1) downto 0);
         
         -- data
         id_reg_1_data   : in std_logic_vector((DATA_SIZE - 1) downto 0);
         id_reg_2_data   : in std_logic_vector((DATA_SIZE - 1) downto 0);
         ex_wr_data      : in std_logic_vector((DATA_SIZE - 1) downto 0);
         mem_wr_data     : in std_logic_vector((DATA_SIZE - 1) downto 0);
+        wb_wr_data      : in std_logic_vector((DATA_SIZE - 1) downto 0);
         
         -- outputs
         reg_1_out       : out std_logic_vector((DATA_SIZE - 1) downto 0);
@@ -61,7 +63,7 @@ begin
 
 process(id_reg_1, id_reg_2, ex_write_reg, 
         mem_write_reg, id_reg_1_data, id_reg_2_data, 
-        ex_wr_data, mem_wr_data)
+        ex_wr_data, mem_wr_data, wb_write_reg, wb_wr_data)
 
 begin
 
@@ -71,6 +73,8 @@ begin
         reg_1_out <= ex_wr_data;
     elsif id_reg_1 = mem_write_reg then
         reg_1_out <= mem_wr_data;
+    elsif id_reg_1 = wb_write_reg then
+        reg_1_out <= wb_wr_data;
     else
         reg_1_out <= id_reg_1_data;
     end if;
@@ -81,6 +85,8 @@ begin
         reg_2_out <= ex_wr_data;
     elsif id_reg_2 = mem_write_reg then
         reg_2_out <= mem_wr_data;
+    elsif id_reg_2 = wb_write_reg then
+        reg_2_out <= wb_wr_data;
     else
         reg_2_out <= id_reg_2_data;
     end if;
