@@ -123,7 +123,7 @@ def record_to_bits(record: str) -> str:
 if __name__ == "__main__":
     print("Running tag-size-based split test case...")
 
-    record = "36 12 2025"
+    record = "36 20 2025"
     message = record_to_bits(record)
 
     tag = encrypt(message, tag_size=5, flip_block=4,

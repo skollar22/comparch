@@ -22,7 +22,7 @@ ori $7, $0, 3968            # imm = 0xF80
 and $7, $5, $7, lsr 7       # <- block 1
 
 lui $8, 1                   # imm = 0x0001 << 16        = 0x00010000
-ori $8, $0, 61440           # imm = 0x00010000 | 0xF000 = 0x0001F000
+ori $8, $8, 61440           # imm = 0x00010000 | 0xF000 = 0x0001F000
 and $8, $5, $8, lsr 12      # <- block 2
 
 lui $9, 62                  # imm = 0x003E << 16        = 0x003E0000
@@ -95,7 +95,7 @@ beq $0, $0, 13
 # If computed tag = sent tag, then add tally to candidate ID's count
 # First, extract tally and candidate ID from record
 lui $8, 15                  # imm = 0x000F << 16        = 0x000F0000
-ori $8, $0, 65504           # imm = 0x000F0000 | 0xFFE0 = 0x000FFFE0
+ori $8, $8, 65504           # imm = 0x000F0000 | 0xFFE0 = 0x000FFFE0
 and $8, $5, $8, lsr 5       # record tally
 
 lui $9, 1008                # imm = 0x03F0 << 16        = 0x03F00000
