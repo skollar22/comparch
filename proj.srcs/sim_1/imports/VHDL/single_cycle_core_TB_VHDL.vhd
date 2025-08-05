@@ -75,7 +75,7 @@ begin
         variable sw_val    : std_logic_vector(15 downto 0);
     begin
         -- Open the file
-        file_open(file_status, input_file, "../../../../input.txt", read_mode);
+        file_open(file_status, input_file, "../../../../../input.txt", read_mode);
         if file_status /= open_ok then
             assert false report "Cannot open input file" severity failure;
         end if;
@@ -96,10 +96,10 @@ begin
             read(L, tag);
             
             -- Construct switches: [2b electoral][2b candidate][8b tally][4b tag]
-            sw_val := std_logic_vector(to_unsigned(electoral, 2)) &
+            sw_val := "00000000" & std_logic_vector(to_unsigned(electoral, 3)) &
                     std_logic_vector(to_unsigned(candidate, 2)) &
-                    std_logic_vector(to_unsigned(tally, 8)) &
-                    std_logic_vector(to_unsigned(tag, 4));
+                    std_logic_vector(to_unsigned(tally, 1)) &
+                    std_logic_vector(to_unsigned(tag, 2));
             
             switches <= sw_val;
             
