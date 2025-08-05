@@ -104,7 +104,7 @@ def record_to_bits(record: str) -> str:
     tally_bits = f"{tally:b}"
     if len(tally_bits) > 8:
         raise ValueError("Tally too large for 8-bit right-padding")
-    tally_bits = tally_bits.ljust(8, '0')  # Right-pad with zeros
+    tally_bits = tally_bits.rjust(8, '0')  # Right-pad with zeros
     return f"{district_id:02b}{candidate_id:02b}{tally_bits}"
 
 # Test case
