@@ -28,7 +28,9 @@ def print_blocks(blocks: list[list[str]], label: str = ""):
     if label:
         print(f"{label}")
     for i, b in enumerate(blocks):
-        print(f"    Block {i}: {''.join(b)}")
+        bin_str = ''.join(b)
+        hex_str = hex(int(bin_str, 2))
+        print(f"    Block {i}: {bin_str} ({hex_str})")
     print()
 
 def encrypt(message_bits: str,
@@ -37,7 +39,8 @@ def encrypt(message_bits: str,
             bx: int, by: int, px: int, py: int, s: int,
             shift_block: int, r: int) -> str:
    
-    print(f"[+] Raw input bits: {message_bits}")
+    message_hex = hex(int(message_bits, 2))
+    print(f"[+] Raw input bits: {message_bits} ({message_hex})")
     # Pad message to a multiple of tag_size
     remainder = len(message_bits) % tag_size
     if remainder != 0:
@@ -71,8 +74,13 @@ def encrypt(message_bits: str,
     
     seg_x = get_segment(blocks[bx], px_left, s)
     seg_y = get_segment(blocks[by], py_left, s)
-    print(f"    From Block {bx} at right-pos {px} (left-pos {px_left}): {''.join(seg_x)}")
-    print(f"    From Block {by} at right-pos {py} (left-pos {py_left}): {''.join(seg_y)}")
+    seg_x_str = ''.join(seg_x)
+    seg_y_str = ''.join(seg_y)
+    seg_x_hex = hex(int(seg_x_str, 2))
+    seg_y_hex = hex(int(seg_y_str, 2))
+    print(f"    From Block {bx} at right-pos {px}): {seg_x_str} ({seg_x_hex})")
+    print(f"    From Block {by} at right-pos {py}): {seg_y_str} ({seg_y_hex})")
+
     set_segment(blocks[bx], px_left, seg_y)
     set_segment(blocks[by], py_left, seg_x)
     print_blocks(blocks, "    After segment swap:")
@@ -84,7 +92,8 @@ def encrypt(message_bits: str,
     
     # XOR to produce result tag
     result_tag = xor_blocks(blocks)
-    print(f"[+] Final XOR result: {result_tag}")
+    result_tag_hex = hex(int(result_tag, 2))
+    print(f"[+] Final XOR result: {result_tag} ({result_tag_hex})")
     return result_tag
 
 def record_to_bits(record: str) -> str:
