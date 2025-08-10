@@ -91,6 +91,15 @@ begin
     if rising_edge (clk) then
         if (flush = '1') or (stall = '1') then
             var_ctrl            := (others => '0');
+            var_read_data_1     := (others => '0');
+            var_read_data_2     := (others => '0');
+            var_imm_32b         := (others => '0');
+            var_rr1             := (others => '0');
+            var_rr2             := (others => '0');
+            var_wr              := (others => '0');
+            var_pc              := (others => '0');
+            var_opcode          := (others => '0');
+            var_shamnt          := (others => '0');
         else
             var_read_data_1     := read_data_1;
             var_read_data_2     := read_data_2;

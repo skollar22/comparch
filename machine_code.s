@@ -20,7 +20,7 @@ ori $7, $0, 3840            # imm = 0xF00
 and $7, $5, $7, lsr 8       # <- block 1
 
 lui $8, 0
-ori $8, $0, 61400           # imm = 0xF000
+ori $8, $0, 61440           # imm = 0xF000
 and $8, $5, $8, lsr 12      # <- block 2
 
 # Flip block 1
@@ -38,20 +38,25 @@ ori $10, $0, 12             # imm = 0b1100
 and $10, $7, $10, lsr 1
 
 lui $11, 0
-ori $11, $0, 9              # imm = 0b1001
+ori $11, $0, 3              # imm = 0b0011
 and $7, $7, $11
-or $7, $7, $10
+or $7, $7, $9
 
 lui $11, 0
-ori $11, $0, 3              # imm = 0b0011
+ori $11, $0, 9              # imm = 0b1001
 and $6, $6, $11
-or $6, $6, $9
+or $6, $6, $10
 
 # Shift block 2 by 2 bits to the left
 lui $10, 0
 ori $10, $0, 12             # imm = 0b1100
 and $9, $8, $10, lsr 2
 or $8, $8, $0, lsl 2
+ori $16, $0, 15             # imm = 0xF
+ori $17, $0, 240            # imm = 0xF0
+and $18, $8, $17, lsr 4
+and $8, $8, $16
+or $8, $8, $18              # this new sequence puts the "rotated off" bits back on the end
 or $8, $9, $8
 
 # XOR all blocks
@@ -94,4 +99,4 @@ lw $3, $0(2)
 lw $4, $0(3)
 
 # Halt and wait for next record
-beq $0, $0, 198
+beq $0, $0, 170             # there will be some nops before the halt, not important
