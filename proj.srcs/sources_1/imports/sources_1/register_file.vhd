@@ -45,8 +45,17 @@ architecture behavioral of register_file is
 
 type reg_file is array(0 to ((2 ** REG_SIZE) - 1)) of std_logic_vector((DATA_SIZE - 1) downto 0);
 signal sig_regfile : reg_file;
+signal reg_addr_7seg : std_logic_vector(4 downto 0) := "00000";
+
+COMPONENT Reg IS
+    PORT( Buttons : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+          Reset, Clock : IN	STD_LOGIC ;
+          Q : BUFFER STD_LOGIC_VECTOR(4 DOWNTO 0) ) ;
+END COMPONENT ;
 
 begin
+    
+    reg_7seg: Reg PORT MAP (buttons, reset, clk, reg_addr_7seg);
 
     mem_process : process ( reset,
                             clk,
@@ -60,6 +69,7 @@ begin
     variable var_read_addr_a : integer;
     variable var_read_addr_b : integer;
     variable var_write_addr  : integer;
+    variable var_7seg_addr  : integer;
     
     begin
     
@@ -82,27 +92,43 @@ begin
         -- and read_register_b
         read_data_a <= var_regfile(var_read_addr_a); 
         read_data_b <= var_regfile(var_read_addr_b);
+        
+        var_7seg_addr := conv_integer(reg_addr_7seg);
+        reg_out <= var_regfile(var_7seg_addr);
 
         -- the following are probe signals (for simulation purpose)
         sig_regfile <= var_regfile;
 
     end process;
     
-    process(clk, reset)
-    begin
-        -- 4 lines for testing
-        --sig_regfile(0) <= "00000000000000000000000000001111";
-        --sig_regfile(1) <= "00000000000000000000000000011111";
-        --sig_regfile(2) <= "00000000000000000000000000111111";
-        --sig_regfile(3) <= "11111111111111111111111111111111";
-        if rising_edge(clk) then
+    
+end behavioral;
+
+
+LIBRARY ieee ;
+USE ieee.std_logic_1164.all ;
+
+ENTITY Reg IS
+    PORT( Buttons : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+          Reset, Clock : IN	STD_LOGIC ;
+          Q : BUFFER STD_LOGIC_VECTOR(4 DOWNTO 0) ) ;
+END Reg ;
+
+ARCHITECTURE Behavior OF Reg IS	
+BEGIN
+    PROCESS ( Clock )
+    BEGIN
+        IF Reset = '1' THEN
+            Q <= (others => '0');
+        ELSIF Clock'EVENT AND Clock = '1' THEN
             case buttons is
-                when "0010" => reg_out <= sig_regfile(1);
-                when "0100" => reg_out <= sig_regfile(2);
-                when "0001" => reg_out <= sig_regfile(3);
-                when "1000" => reg_out <= sig_regfile(4);
+                when "0010" => Q <= "00001";
+                when "0100" => Q <= "00010";
+                when "0001" => Q <= "00011";
+                when "1000" => Q <= "00100";
                 when others => null;
             end case;
-        end if;
-    end process;
-end behavioral;
+        END IF ;
+    END PROCESS ;
+END Behavior ;
+
