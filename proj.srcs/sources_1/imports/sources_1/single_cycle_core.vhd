@@ -60,7 +60,7 @@ entity single_cycle_core is
            btnD   : in std_logic;
            clk    : in std_logic;
            btnC   : in std_logic;
-           swi     : in std_logic_vector (31 downto 0);
+           sw     : in std_logic_vector (15 downto 0);
            led    : out std_logic_vector (15 downto 0);
            an     : out std_logic_vector (3 downto 0);
            seg    : out std_logic_vector (6 downto 0);
@@ -800,15 +800,13 @@ begin
                reset        => btnL,
                data_out     => sig_wb_dispr_out );
     
---    sw_ext : sign_extend
---    generic map (
---                DATA_SIZE => DATA_SIZE,
---                IMM_SIZE => DATA_SIZE
---                )
---    port map ( data_in => swi,
---               data_out => sig_wb_sw_ext );
-
-    sig_wb_sw_ext <= swi;
+    sw_ext : sign_extend
+    generic map (
+                DATA_SIZE => DATA_SIZE,
+                IMM_SIZE => IMM_SIZE
+                )
+    port map ( data_in => sw,
+               data_out => sig_wb_sw_ext );
     
     
     mux_final_data_out : mux_2to1

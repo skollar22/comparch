@@ -41,9 +41,9 @@ begin
 
         -- the extended bits take on the value of the most significant
         -- bit (MSB) of data_in
-         for i in (DATA_SIZE - 1) downto IMM_SIZE loop
-             data_out(i) <= '0';
-         end loop;
+        for i in (DATA_SIZE - 1) downto IMM_SIZE loop
+            data_out(i) <= data_in((IMM_SIZE - 1));
+        end loop;
 
     end process;
     
