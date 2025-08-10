@@ -14,7 +14,7 @@ signal r_reset    : std_logic := '0';
 signal R, U, D    : std_logic := '0';
 signal unhalt      : std_logic := '0';
 signal led_array  : std_logic_vector (15 downto 0) := (others => '0');
-signal switches   : std_logic_vector(15 downto 0) := (others => '0');
+signal switches   : std_logic_vector(31 downto 0) := (others => '0');
 signal anodes     : std_logic_vector(3 downto 0) := (others => '0');
 signal segments   : std_logic_vector(6 downto 0) := (others => '0');
 signal dp         : std_logic := '0';
@@ -30,7 +30,7 @@ component single_cycle_core is
         btnD  : in  std_logic;
         clk   : in  std_logic;
         btnC  : in  std_logic;
-        sw    : in  std_logic_vector (15 downto 0);
+        swi   : in  std_logic_vector (31 downto 0);
         led   : out std_logic_vector (15 downto 0);
         an    : out std_logic_vector (3 downto 0);
         seg   : out std_logic_vector (6 downto 0);
@@ -48,7 +48,7 @@ begin
             btnD => D,
             clk  => r_CLOCK,
             btnC => unhalt,
-            sw   => switches,
+            swi  => switches,
             led  => led_array,
             an   => anodes,
             seg  => segments,
@@ -72,7 +72,7 @@ begin
         variable candidate : integer;
         variable tally     : integer;
         variable tag       : integer;
-        variable sw_val    : std_logic_vector(15 downto 0);
+        variable sw_val    : std_logic_vector(31 downto 0);
     begin
         -- Open the file
         file_open(file_status, input_file, "../../../../input.txt", read_mode);
@@ -96,10 +96,10 @@ begin
             read(L, tag);
             
             -- Construct switches: [2b electoral][2b candidate][8b tally][4b tag]
-            sw_val := std_logic_vector(to_unsigned(electoral, 2)) &
-                    std_logic_vector(to_unsigned(candidate, 2)) &
-                    std_logic_vector(to_unsigned(tally, 8)) &
-                    std_logic_vector(to_unsigned(tag, 4));
+            sw_val := std_logic_vector(to_unsigned(electoral, 6)) &
+                    std_logic_vector(to_unsigned(candidate, 6)) &
+                    std_logic_vector(to_unsigned(tally, 15)) &
+                    std_logic_vector(to_unsigned(tag, 5));
             
             switches <= sw_val;
             
@@ -120,7 +120,7 @@ begin
             wait for 2 * c_CLOCK_PERIOD;
             unhalt <= '0';
             
-            wait for 100 * c_CLOCK_PERIOD; -- allow processing time
+            wait for 120 * c_CLOCK_PERIOD; -- allow processing time
         end loop;
         
         -- Close the file
