@@ -23,6 +23,8 @@
 #define OP_ORI      "100111"
 #define OP_HLT      "111111"
 
+#define OP_NOP      "000000"
+
 std::string delimiter = " ";
 
 std::string toBinary(int input, int length = 5) {
@@ -153,7 +155,7 @@ std::string handleOri(const char *opcode, std::string operands) {
     // remove dollar sign
     reg2.erase(0, 1);
 
-    std::string rs = toBinary(std::stoi(reg));
+    std::string rs = toBinary(std::stoi(reg2));
 
     // get imm
     std::string immediate = toBinary(std::stoi(operands), 16);
@@ -349,6 +351,8 @@ int main(int argc, char **argv) {
             res = handleRType(OP_SLT, line);
         } else if (token.compare("not") == 0) {     // NOT  $d $s
             res = handleNot(OP_NOT, line);
+        } else if (token.compare("nop") == 0) {     // NOT  $d $s
+            res = "00000000000000000000000000000000";
         } else if (token.compare("lui") == 0) {     // LUI  $d i
             res = handleLui(OP_LUI, line);
         } else if (token.compare("ori") == 0) {     // ORI  $d $s i
