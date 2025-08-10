@@ -97,23 +97,35 @@ def encrypt(message_bits: str,
     return result_tag
 
 def record_to_bits(record: str) -> str:
-    """Convert record like '1 3 40' into a 12-bit binary string."""
+    """Convert record like '1 3 40' into a 27-bit binary string."""
     district_id, candidate_id, tally = map(int, record.strip().split())
-    if not (0 <= district_id < 4 and 0 <= candidate_id < 4 and 0 <= tally < 256):
+    if not (0 <= district_id < 64 and 0 <= candidate_id < 64 and 0 <= tally < 32768):
         raise ValueError("Record values out of allowed bit range.")
+    
     tally_bits = f"{tally:b}"
-    if len(tally_bits) > 8:
-        raise ValueError("Tally too large for 8-bit right-padding")
-    tally_bits = tally_bits.rjust(8, '0')  # Right-pad with zeros
-    return f"{district_id:02b}{candidate_id:02b}{tally_bits}"
+    if len(tally_bits) > 15:
+        raise ValueError("Tally too large for 15-bit right-padding")
+    tally_bits = tally_bits.rjust(15, '0')  # Right-pad with zeros
+
+    district_bits = f"{district_id:b}"
+    if len(district_bits) > 6:
+        raise ValueError("District ID too large for 6-bit right-padding")
+    district_bits = district_bits.rjust(6, '0')  # Right-pad with zeros
+
+    candidate_bits = f"{candidate_id:b}"
+    if len(candidate_bits) > 6:
+        raise ValueError("Candidate ID too large for 6-bit right-padding")
+    candidate_bits = candidate_bits.rjust(6, '0')  # Right-pad with zeros
+
+    return f"{district_bits}{candidate_bits}{tally_bits}"
 
 # Test case
 if __name__ == "__main__":
     print("Running tag-size-based split test case...")
 
-    record = "1 2 12"
+    record = "36 20 2025"
     message = record_to_bits(record)
 
-    tag = encrypt(message, tag_size=4, flip_block=1,
-                  bx=0, by=1, px=1, py=2, s=2,
-                  shift_block=2, r=2)
+    tag = encrypt(message, tag_size=5, flip_block=4,
+                  bx=1, by=3, px=2, py=0, s=3,
+                  shift_block=0, r=4)
