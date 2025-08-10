@@ -511,8 +511,8 @@ begin
     sig_one_8b <= "00000001";
     sig_buttons <= btnL & btnR & btnU & btnD;
     
---    DebounceBtnC: Debounce port map (clk, btnC, sig_debounce_btnC); -- when doing board impl
-     sig_debounce_btnC <= btnC;                                      -- when doing simulation
+    DebounceBtnC: Debounce port map (clk, btnC, sig_debounce_btnC); -- when doing board impl
+--    sig_debounce_btnC <= btnC;                                      -- when doing simulation
     
     seven_seg : reg_to_7seg
     port map ( clk       => clk,
