@@ -75,6 +75,7 @@ begin
         variable sw_val    : std_logic_vector(15 downto 0);
     begin
         -- Open the file
+        -- Relative path: change path to input.txt accordingly
         file_open(file_status, input_file, "../../../../input.txt", read_mode);
         if file_status /= open_ok then
             assert false report "Cannot open input file" severity failure;
