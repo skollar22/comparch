@@ -60,7 +60,7 @@ entity single_cycle_core is
            btnD   : in std_logic;
            clk    : in std_logic;
            btnC   : in std_logic;
-           swi     : in std_logic_vector (31 downto 0);
+           sw     : in std_logic_vector (15 downto 0);
            led    : out std_logic_vector (15 downto 0);
            an     : out std_logic_vector (3 downto 0);
            seg    : out std_logic_vector (6 downto 0);
@@ -162,17 +162,6 @@ component adder is
            sum       : out std_logic_vector((PC_SIZE - 1) downto 0);
            carry_out : out std_logic );
 end component;
-
---component adder_32b is
---    generic (
---            ADD_SIZE : integer := 32
---        );
---    port ( src_a     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
---           src_b     : in  std_logic_vector((DATA_SIZE - 1) downto 0);
---           sum       : out std_logic_vector((DATA_SIZE - 1) downto 0);
---           equal     : out std_logic;
---           carry_out : out std_logic );
---end component;
 
 component data_memory is
     generic (
@@ -425,39 +414,37 @@ signal sig_id_read_data_b          : std_logic_vector((DATA_SIZE - 1) downto 0);
 signal sig_ex_alu_src_b            : std_logic_vector((DATA_SIZE - 1) downto 0);
 signal sig_ex_alu_result           : std_logic_vector((DATA_SIZE - 1) downto 0); 
 signal sig_ex_alu_carry_out        : std_logic;
-signal sig_mem_data_mem_out         : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_mem_data_mem_out        : std_logic_vector((DATA_SIZE - 1) downto 0);
 
-signal sig_pc_next_actual       : std_logic_vector((PC_SIZE - 1) downto 0);
-signal sig_alu_equal            : std_logic;
-signal sig_wb_dispr_out         : std_logic_vector (15 downto 0);
+signal sig_pc_next_actual          : std_logic_vector((PC_SIZE - 1) downto 0);
+signal sig_wb_dispr_out            : std_logic_vector (15 downto 0);
 
-signal sig_if_hlt               : std_logic;
-signal sig_if_flush             : std_logic;
-signal sig_if_stall             : std_logic;
+signal sig_if_hlt                  : std_logic;
+signal sig_if_flush                : std_logic;
+signal sig_if_stall                : std_logic;
 
 
-signal sig_id_opcode      : std_logic_vector(5 downto 0);
-signal sig_id_rs          : std_logic_vector((REG_SIZE - 1) downto 0);
-signal sig_id_rt          : std_logic_vector((REG_SIZE - 1) downto 0);
-signal sig_id_rd          : std_logic_vector((REG_SIZE - 1) downto 0);
-signal sig_id_imm16b      : std_logic_vector(15 downto 0);
---signal sig_id_imm32b      : std_logic_vector(31 downto 0);
-signal sig_id_pc_out      : std_logic_vector((PC_SIZE - 1) downto 0);
-signal sig_id_ex_ctrl     : std_logic_vector(1 downto 0);
-signal sig_id_wb_ctrl     : std_logic_vector(3 downto 0);
+signal sig_id_opcode               : std_logic_vector(5 downto 0);
+signal sig_id_rs                   : std_logic_vector((REG_SIZE - 1) downto 0);
+signal sig_id_rt                   : std_logic_vector((REG_SIZE - 1) downto 0);
+signal sig_id_rd                   : std_logic_vector((REG_SIZE - 1) downto 0);
+signal sig_id_imm16b               : std_logic_vector(15 downto 0);
+signal sig_id_pc_out               : std_logic_vector((PC_SIZE - 1) downto 0);
+signal sig_id_ex_ctrl              : std_logic_vector(1 downto 0);
+signal sig_id_wb_ctrl              : std_logic_vector(3 downto 0);
 
-signal sig_ex_read_out_1          : std_logic_vector((DATA_SIZE - 1) downto 0);
-signal sig_ex_read_out_2          : std_logic_vector((DATA_SIZE - 1) downto 0);
-signal sig_ex_imm32b              : std_logic_vector((DATA_SIZE - 1) downto 0);
-signal sig_ex_imm8b               : std_logic_vector((PC_SIZE - 1) downto 0);
-signal sig_ex_rr_out_1            : std_logic_vector((REG_SIZE - 1) downto 0);
-signal sig_ex_rr_out_2            : std_logic_vector((REG_SIZE - 1) downto 0);
-signal sig_ex_wr_out              : std_logic_vector((REG_SIZE - 1) downto 0);
-signal sig_ex_pc_out              : std_logic_vector((PC_SIZE - 1) downto 0);
-signal sig_ex_mem_ctrl_out        : std_logic;
-signal sig_ex_wb_ctrl_out         : std_logic_vector(3 downto 0);
-signal sig_ex_alu_src             : std_logic;
-signal sig_ex_pc_add              : std_logic;
+signal sig_ex_read_out_1           : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_ex_read_out_2           : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_ex_imm32b               : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_ex_imm8b                : std_logic_vector((PC_SIZE - 1) downto 0);
+signal sig_ex_rr_out_1             : std_logic_vector((REG_SIZE - 1) downto 0);
+signal sig_ex_rr_out_2             : std_logic_vector((REG_SIZE - 1) downto 0);
+signal sig_ex_wr_out               : std_logic_vector((REG_SIZE - 1) downto 0);
+signal sig_ex_pc_out               : std_logic_vector((PC_SIZE - 1) downto 0);
+signal sig_ex_mem_ctrl_out         : std_logic;
+signal sig_ex_wb_ctrl_out          : std_logic_vector(3 downto 0);
+signal sig_ex_alu_src              : std_logic;
+signal sig_ex_pc_add               : std_logic;
 
 
 signal sig_mem_alu_res_out         : std_logic_vector((DATA_SIZE - 1) downto 0);
@@ -466,53 +453,46 @@ signal sig_mem_write_reg_out       : std_logic_vector((REG_SIZE - 1) downto 0);
 signal sig_mem_mem_write           : std_logic;
 signal sig_mem_wb_ctrl_out         : std_logic_vector(3 downto 0);
 
-signal sig_wb_reg_write   : std_logic;
-signal sig_wb_write_reg   : std_logic_vector((REG_SIZE - 1) downto 0);
-signal sig_wb_write_data  : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_wb_reg_write            : std_logic;
+signal sig_wb_write_reg            : std_logic_vector((REG_SIZE - 1) downto 0);
+signal sig_wb_write_data           : std_logic_vector((DATA_SIZE - 1) downto 0);
 
-signal sig_wb_alu_result_out      : std_logic_vector((DATA_SIZE - 1) downto 0);
-signal sig_wb_mem_result_out      : std_logic_vector((DATA_SIZE - 1) downto 0);
-signal sig_wb_write_reg_out       : std_logic_vector((REG_SIZE - 1) downto 0);
-signal sig_wb_mem_to_reg          : std_logic;
-signal sig_wb_switch_in           : std_logic;
-signal sig_wb_led_write           : std_logic;
+signal sig_wb_alu_result_out       : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_wb_mem_result_out       : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_wb_mem_to_reg           : std_logic;
+signal sig_wb_switch_in            : std_logic;
+signal sig_wb_led_write            : std_logic;
 
-signal sig_wb_alu_or_mem            : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_wb_alu_or_mem           : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_wb_sw_ext               : std_logic_vector((DATA_SIZE - 1) downto 0);
 
+signal sig_alu_op                  : std_logic_vector(3 downto 0);
+signal sig_alu_zero                : std_logic;
+signal sig_ex_opcode               : std_logic_vector(5 downto 0);
+signal sig_buttons                 : std_logic_vector(3 downto 0);
+signal sig_reg_out                 : std_Logic_vector((DATA_SIZE - 1) downto 0);
 
+signal sig_id_shamnt               : std_logic_vector(4 downto 0);
+signal sig_id_shfunct              : std_logic;
 
+signal sig_ex_shamnt               : std_logic_vector(4 downto 0);
+signal sig_ex_shfunct              : std_logic;
+signal sig_ex_shift                : std_logic;
 
-signal sig_wb_sw_ext                : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_debounce_btnC           : std_logic;
 
+signal sig_id_read_data_fw_a       : std_logic_vector((DATA_SIZE - 1) downto 0);
+signal sig_id_read_data_fw_b       : std_logic_vector((DATA_SIZE - 1) downto 0);
 
-signal sig_alu_op                   : std_logic_vector(3 downto 0);
-signal sig_alu_zero                 : std_logic;
-signal sig_ex_opcode                : std_logic_vector(5 downto 0);
-signal sig_buttons                  : std_logic_vector(3 downto 0);
-signal sig_reg_out                  : std_Logic_vector((DATA_SIZE - 1) downto 0);
-
-signal sig_id_shamnt                : std_logic_vector(4 downto 0);
-signal sig_id_shfunct               : std_logic;
-
-signal sig_ex_shamnt                : std_logic_vector(4 downto 0);
-signal sig_ex_shfunct               : std_logic;
-signal sig_ex_shift                 : std_logic;
-
-signal sig_debounce_btnC            : std_logic;
-
-signal sig_id_read_data_fw_a        : std_logic_vector((DATA_SIZE - 1) downto 0);
-signal sig_id_read_data_fw_b        : std_logic_vector((DATA_SIZE - 1) downto 0);
-
-signal sig_if_haz_ctrl_ex           : std_logic;
-signal sig_if_haz_ctrl_mem          : std_logic;
+signal sig_if_haz_ctrl_ex          : std_logic;
+signal sig_if_haz_ctrl_mem         : std_logic;
 
 begin
-
     sig_one_8b <= "00000001";
     sig_buttons <= btnL & btnR & btnU & btnD;
     
-    DebounceBtnC: Debounce port map (clk, btnC, sig_debounce_btnC); -- when doing board impl
---    sig_debounce_btnC <= btnC;                                      -- when doing simulation
+--    DebounceBtnC: Debounce port map (clk, btnC, sig_debounce_btnC); -- when doing board impl
+    sig_debounce_btnC <= btnC;                                      -- when doing simulation
     
     seven_seg : reg_to_7seg
     port map ( clk       => clk,
@@ -800,15 +780,13 @@ begin
                reset        => btnL,
                data_out     => sig_wb_dispr_out );
     
---    sw_ext : sign_extend
---    generic map (
---                DATA_SIZE => DATA_SIZE,
---                IMM_SIZE => DATA_SIZE
---                )
---    port map ( data_in => swi,
---               data_out => sig_wb_sw_ext );
-
-    sig_wb_sw_ext <= swi;
+    sw_ext : sign_extend
+    generic map (
+                DATA_SIZE => DATA_SIZE,
+                IMM_SIZE => IMM_SIZE
+                )
+    port map ( data_in => sw,
+               data_out => sig_wb_sw_ext );
     
     
     mux_final_data_out : mux_2to1
